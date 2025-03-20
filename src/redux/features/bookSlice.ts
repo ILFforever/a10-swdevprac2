@@ -12,7 +12,7 @@ export const bookSlice = createSlice({
 
     addBooking: (state, action: PayloadAction<BookingItem>) => {
       const duplicateDateBookings = state.bookItems.filter(item => 
-        item.bookDate === action.payload.bookDate && item.venue === action.payload.venue
+        item.bookDate === action.payload.bookDate
       );
       
       if (duplicateDateBookings.length > 0) {
