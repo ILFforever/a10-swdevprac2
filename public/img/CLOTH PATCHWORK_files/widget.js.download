@@ -1,0 +1,3626 @@
+/*!
+  * Application Version: 5.0.13
+  * Application Environment: prod
+  * Build Version: 1738589467
+  */
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other entry modules.
+(() => {
+// extracted by mini-css-extract-plugin
+
+})();
+
+// This entry need to be wrapped in an IIFE because it need to be isolated against other entry modules.
+(() => {
+
+;// CONCATENATED MODULE: ./app/modules/stejar/utils/postMessage.js
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function postMessage(topic, payload) {
+  var origin = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "*";
+  var target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : window;
+  payload = JSON.stringify(payload);
+  target.postMessage({
+    topic: topic,
+    payload: payload
+  }, origin);
+}
+function addCrossDomainEventListener(topic, callback) {
+  var listener = function listener(event) {
+    if (!event || !event.data || !event.data.topic || event.data.topic != topic) {
+      return;
+    }
+
+    var payload = event.data.payload;
+
+    if (undefined === payload) {
+      payload = null;
+    }
+
+    callback(payload ? typeof payload === "string" ? JSON.parse(payload) : payload : {});
+  };
+
+  var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+  var eventer = window[eventMethod];
+  var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+  eventer(messageEvent, listener, false);
+  return listener;
+}
+function removeCrossDomainEventListener(listener) {
+  var eventMethod = window.removeEventListener ? "removeEventListener" : "detachEvent";
+  var eventer = window[eventMethod];
+  var messageEvent = eventMethod == "detachEvent" ? "onmessage" : "message";
+  eventer(messageEvent, listener, false);
+}
+var Channel = /*#__PURE__*/(/* unused pure expression or super */ null && (function () {
+  function Channel(origin) {
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window;
+    var debug = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+    _classCallCheck(this, Channel);
+
+    this.origin = origin;
+    this.target = target;
+    this.debug = debug;
+    this.debugListenres = [];
+  }
+
+  _createClass(Channel, [{
+    key: "subscribe",
+    value: function subscribe(topic, callback) {
+      if (this.debug) {
+        console.log("Subscribing to \"".concat(topic, "\" ..."));
+        this.debugListenres.push(addCrossDomainEventListener(topic, function (payload) {
+          console.log("Received message for topic \"".concat(topic, "\" and payload: "), payload);
+        }));
+      }
+
+      return addCrossDomainEventListener(topic, callback);
+    }
+  }, {
+    key: "unsuscribe",
+    value: function unsuscribe(listener) {
+      return removeCrossDomainEventListener(listener);
+    }
+  }, {
+    key: "send",
+    value: function send(topic, payload) {
+      if (this.debug) {
+        console.log("Sending message for \"".concat(topic, "\" with payload: "), payload);
+      }
+
+      return postMessage(topic, payload, this.origin, this.target);
+    }
+  }]);
+
+  return Channel;
+}()));
+;// CONCATENATED MODULE: ./messages.js
+var COMMUNICATION_MESSAGES = {
+  INTEGRATOR_INITIALIZE: "INTEGRATOR_INITIALIZE",
+  INTEGRATOR_SHOW_BACKDROP: "INTEGRATOR_SHOW_BACKDROP",
+  INTEGRATOR_HIDE_BACKDROP: "INTEGRATOR_HIDE_BACKDROP",
+  INTEGRATOR_SHOW_MOBILE_TABS: "INTEGRATOR_SHOW_MOBILE_TABS",
+  INTEGRATOR_HIDE_MOBILE_TABS: "INTEGRATOR_HIDE_MOBILE_TABS",
+  INTEGRATOR_EXPAND: "INTEGRATOR_EXPAND",
+  INTEGRATOR_COLLAPSE: "INTEGRATOR_COLLAPSE",
+  INTEGRATOR_LOGGED_OUT: "INTEGRATOR_LOGGED_OUT",
+  INTEGRATOR_LOGGED_IN: "INTEGRATOR_LOGGED_IN",
+  INTEGRATOR_RESIZE: "INTEGRATOR_RESIZE",
+  INTEGRATOR_OPEN_LOGIN_MODAL: "INTEGRATOR_OPEN_LOGIN_MODAL",
+  INTEGRATOR_CLOSE_LOGIN_MODAL: "INTEGRATOR_CLOSE_LOGIN_MODAL",
+  INTEGRATOR_CHANGE_LOCALE: "INTEGRATOR_CHANGE_LOCALE",
+  INTEGRATOR_CHANGE_IFRAME_HEIGHT: "INTEGRATOR_CHANGE_IFRAME_HEIGHT",
+  INTEGRATOR_ENV_LOADED: "INTEGRATOR_ENV_LOADED",
+  INTEGRATOR_CHANGE_IFRAME_URL: "INTEGRATOR_CHANGE_IFRAME_URL",
+  INTEGRATOR_TRIGGER_EMAIL_VERIFICATION: "INTEGRATOR_TRIGGER_EMAIL_VERIFICATION",
+  INTEGRATOR_TRIGGER_LOGOUT: "INTEGRATOR_TRIGGER_LOGOUT",
+  INTEGRATOR_TRIGGER_CHANGE_CONFIG: "INTEGRATOR_TRIGGER_CHANGE_CONFIG",
+  INTEGRATOR_TRIGGER_USER_DATA: "INTEGRATOR_TRIGGER_USER_DATA",
+  INTEGRATOR_TRIGGER_REFRESH_IDENTITY: "INTEGRATOR_TRIGGER_REFRESH_IDENTITY",
+  INTEGRATOR_401_FLOW: "INTEGRATOR_401_FLOW",
+  INTEGRATOR_GET_TICKET: "INTEGRATOR_GET_TICKET",
+  INTEGRATOR_GET_CONNECT_CALLBACKS_PARAMS: "INTEGRATOR_GET_CONNECT_CALLBACKS_PARAMS",
+  INTEGRATOR_GET_ENV: "INTEGRATOR_GET_ENV",
+  INTEGRATOR_GET_IFRAME_BOUNDING_CLIENT_RECT: "INTEGRATOR_GET_IFRAME_BOUNDING_CLIENT_RECT",
+  INTEGRATOR_OPEN_POPUP_WINDOW: "INTEGRATOR_OPEN_POPUP_WINDOW",
+  INTEGRATOR_GET_THIRD_PARTY_STATUS_FOR_LOGIN: "INTEGRATOR_GET_THIRD_PARTY_STATUS_FOR_LOGIN",
+  INTEGRATOR_ON_FRIEND_ACTION: "INTEGRATOR_ON_FRIEND_ACTION",
+  WIDGET_BOOTSTRAP: "WIDGET_BOOTSTRAP",
+  WIDGET_CHANGE_LOCALE: "WIDGET_CHANGE_LOCALE",
+  WIDGET_CHANGE_GAME: "WIDGET_CHANGE_GAME",
+  WIDGET_HANDLE_BACKDROP_CLICK: "WIDGET_HANDLE_BACKDROP_CLICK",
+  WIDGET_COLLAPSE: "WIDGET_COLLAPSE",
+  WIDGET_EXPAND_FRIENDS: "WIDGET_EXPAND_FRIENDS",
+  WIDGET_EXPAND_PLAYER_CARD: "WIDGET_EXPAND_PLAYER_CARD",
+  WIDGET_EXPAND_NOTIFICATIONS: "WIDGET_EXPAND_NOTIFICATIONS",
+  WIDGET_RESIZED_WINDOW: "WIDGET_RESIZED_WINDOW",
+  WIDGET_RESIZE_WIDTH: 640,
+  WIDGET_MOBILE_WIDTH: 490,
+  WIDGET_CHANGE_ENV: "WIDGET_CHANGE_ENV",
+  WIDGET_RE_INIT: "WIDGET_RE_INIT",
+  WIDGET_CHANGE_FRIEND_PROFILE_TYPE: "WIDGET_CHANGE_FRIEND_PROFILE_TYPE",
+  WIDGET_CHANGE_EXTERNAL_LOGIN_TYPE: "WIDGET_CHANGE_EXTERNAL_LOGIN_TYPE",
+  WIDGET_CHANGE_DARK_BACKGROUND: "WIDGET_CHANGE_DARK_BACKGROUND",
+  WIDGET_TOGGLE_SIGN_IN_TEXT: "WIDGET_TOGGLE_SIGN_IN_TEXT",
+  WIDGET_TOGGLE_DESKTOP_RESIZE: "WIDGET_TOGGLE_DESKTOP_RESIZE",
+  WIDGET_TOGGLE_LOGIN_TYPE: "WIDGET_TOGGLE_LOGIN_TYPE",
+  WIDGET_URL: "WIDGET_URL",
+  WIDGET_SOS_ID: "WIDGET_SOS_ID",
+  WIDGET_TICKET_SUCESS: "WIDGET_TICKET_SUCESS",
+  WIDGET_TICKET_ERROR: "WIDGET_TICKET_ERROR",
+  WIDGET_TRIGGER_EMAIL_VERIFICATION: "WIDGET_TRIGGER_EMAIL_VERIFICATION",
+  WIDGET_TRIGGER_LOGOUT: "WIDGET_TRIGGER_LOGOUT",
+  WIDGET_TRIGGER_USER_DATA_SUCCESS: "WIDGET_TRIGGER_USER_DATA_SUCCESS",
+  WIDGET_TRIGGER_USER_DATA_ERROR: "WIDGET_TRIGGER_USER_DATA_ERROR",
+  WIDGET_SET_CONNECT_LOGIN_URL: "WIDGET_SET_CONNECT_LOGIN_URL",
+  WIDGET_401_FLOW_GOT_TICKET: "WIDGET_401_FLOW_GOT_TICKET",
+  WIDGET_401_FLOW_NO_TICKET: "WIDGET_401_FLOW_NO_TICKET",
+  WIDGET_GET_TICKET: "WIDGET_GET_TICKET",
+  WIDGET_GET_CONNECT_CALLBACKS_PARAMS: "WIDGET_GET_CONNECT_CALLBACKS_PARAMS",
+  WIDGET_INITIAL_WINDOW_HEIGHT: "WIDGET_INITIAL_WINDOW_HEIGHT",
+  WIDGET_GET_ENV: "WIDGET_GET_ENV",
+  WIDGET_GET_IFRAME_BOUNDING_CLIENT_RECT: "WIDGET_GET_IFRAME_BOUNDING_CLIENT_RECT",
+  WIDGET_LOGIN: "WIDGET_LOGIN",
+  WIDGET_LOGOUT: "WIDGET_LOGOUT",
+  WIDGET_TRIGGER_EMAIL_ACTIVATION: "WIDGET_TRIGGER_EMAIL_ACTIVATION",
+  WIDGET_OPEN_POPUP_WINDOW: "WIDGET_OPEN_POPUP_WINDOW",
+  WIDGET_UPDATE_INTEGRATOR_CONFIG: "WIDGET_UPDATE_INTEGRATOR_CONFIG",
+  WIDGET_THIRD_PARTY_COOKIES_SUPPORT: "WIDGET_THIRD_PARTY_COOKIES_SUPPORT"
+};
+var ANALYTICS_COMMUNICATION_MESSAGES = {
+  ANALYTICS_SDK_LOADED: "ANALYTICS_SDK_LOADED",
+  S_CODE_READY: "S_CODE_READY",
+  S_CODE_REMOVED: "S_CODE_REMOVED",
+  PRIVACY_POLICY_VIEWED: "PRIVACY_POLICY_VIEWED",
+  PRIVACY_POLICY_ACCEPTED: "PRIVACY_POLICY_ACCEPTED",
+  PRIVACY_POLICY_REFUSED: "PRIVACY_POLICY_REFUSED",
+  PRIVACY_POLICY_ANALYTICS_OFF: "PRIVACY_POLICY_ANALYTICS_OFF",
+  PRIVACY_POLICY_CUSTOMIZATION_OFF: "PRIVACY_POLICY_CUSTOMIZATION_OFF",
+  PRIVACY_POLICY_MEDIA_ANALYTICS_OFF: "PRIVACY_POLICY_MEDIA_ANALYTICS_OFF",
+  PRIVACY_POLICY_VIDEOS_OFF: "PRIVACY_POLICY_VIDEOS_OFF",
+  PRIVACY_POLICY_ANALYTICS_ON: "PRIVACY_POLICY_ANALYTICS_ON",
+  PRIVACY_POLICY_CUSTOMIZATION_ON: "PRIVACY_POLICY_CUSTOMIZATION_ON",
+  PRIVACY_POLICY_MEDIA_ANALYTICS_ON: "PRIVACY_POLICY_MEDIA_ANALYTICS_ON",
+  PRIVACY_POLICY_VIDEOS_ON: "PRIVACY_POLICY_VIDEOS_ON",
+  THIRD_PARTY_OPT_IN: "THIRD_PARTY_OPT_IN"
+};
+var PANEL = {
+  PLAYER_CARD: "PLAYER_CARD",
+  FRIENDS: "FRIENDS",
+  NOTIFICATIONS: "NOTIFICATIONS",
+  ANY: "ANY"
+};
+var SIGN_IN_TEXT = {
+  DEFAULT: "DEFAULT",
+  AVATAR_SIGN_IN: "AVATAR_SIGN_IN",
+  SIGN_IN: "SIGN_IN",
+  FALSE: "false",
+  TRUE: "true"
+};
+var OVERLAY_CONTAINER_WIDTH = "334px";
+var OVERLAY_ON_CONNECT_ACTION_TYPE = {
+  INIT: "init",
+  LOGIN: "login",
+  LOGOUT: "logout",
+  REINIT: "reInit"
+};
+var FRIEND_ACTION_TYPE = {
+  ACCEPTED_FRIEND_REQUEST: "ACCEPTED_FRIEND_REQUEST",
+  DELETE_FRIEND_REQUEST: "DELETE_FRIEND_REQUEST",
+  SEND_FRIEND_REQUEST: "SEND_FRIEND_REQUEST"
+};
+;// CONCATENATED MODULE: ./app/modules/integrator/communication/services/HtmlEvents.js
+function HtmlEvents_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function HtmlEvents_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function HtmlEvents_createClass(Constructor, protoProps, staticProps) { if (protoProps) HtmlEvents_defineProperties(Constructor.prototype, protoProps); if (staticProps) HtmlEvents_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var HtmlEvents = /*#__PURE__*/function () {
+  function HtmlEvents() {
+    HtmlEvents_classCallCheck(this, HtmlEvents);
+  }
+
+  HtmlEvents_createClass(HtmlEvents, null, [{
+    key: "add",
+    value: function add(element, event, fn) {
+      if (element.attachEvent) {
+        return element.attachEvent("on" + event, fn);
+      }
+
+      return element.addEventListener(event, fn, false);
+    }
+  }, {
+    key: "remove",
+    value: function remove(element, event, fn) {
+      if (element.removeEvent) {
+        return element.removeEvent("on" + event, fn);
+      }
+
+      return element.removeEventListener(event, fn);
+    }
+  }]);
+
+  return HtmlEvents;
+}();
+;// CONCATENATED MODULE: ./app/services/DebugService.js
+function DebugService_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function DebugService_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function DebugService_createClass(Constructor, protoProps, staticProps) { if (protoProps) DebugService_defineProperties(Constructor.prototype, protoProps); if (staticProps) DebugService_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var CONSOLE_LOG_TYPE = {
+  LOG: "LOG",
+  INFO: "INFO",
+  WARN: "WARN",
+  ERROR: "ERROR"
+};
+var DebugService = /*#__PURE__*/function () {
+  function DebugService(debug) {
+    DebugService_classCallCheck(this, DebugService);
+
+    this.debug = false;
+
+    if (true) {
+      this.debug = false;
+    }
+
+    if (debug !== undefined && debug !== null) {
+      this.debug = debug;
+    }
+  }
+
+  DebugService_createClass(DebugService, [{
+    key: "enableDebug",
+    value: function enableDebug() {
+      this.debug = true;
+    }
+  }, {
+    key: "disableDebug",
+    value: function disableDebug() {
+      this.debug = false;
+    }
+  }, {
+    key: "setDebug",
+    value: function setDebug(debug) {
+      this.debug = debug;
+    }
+  }, {
+    key: "log",
+    value: function log(messages) {
+      this.consoleCall(messages, CONSOLE_LOG_TYPE.LOG);
+    }
+  }, {
+    key: "info",
+    value: function info(messages) {
+      this.consoleCall(messages, CONSOLE_LOG_TYPE.INFO);
+    }
+  }, {
+    key: "warn",
+    value: function warn(messages) {
+      this.consoleCall(messages, CONSOLE_LOG_TYPE.WARN);
+    }
+  }, {
+    key: "error",
+    value: function error(messages) {
+      this.consoleCall(messages, CONSOLE_LOG_TYPE.ERROR);
+    }
+  }, {
+    key: "consoleCall",
+    value: function consoleCall(messages, type) {
+      var _this = this;
+
+      if (this.debug) {
+        if (!!messages && Array.isArray(messages)) {
+          messages.forEach(function (message) {
+            _this.switchByType(message, type);
+          });
+        } else {
+          this.switchByType(messages, type);
+        }
+      }
+    }
+  }, {
+    key: "switchByType",
+    value: function switchByType(message, type) {
+      if (!message) {
+        return;
+      }
+
+      switch (type) {
+        case CONSOLE_LOG_TYPE.LOG:
+          console.log(message);
+          break;
+
+        case CONSOLE_LOG_TYPE.INFO:
+          console.info(message);
+          break;
+
+        case CONSOLE_LOG_TYPE.WARN:
+          console.warn(message);
+          break;
+
+        case CONSOLE_LOG_TYPE.ERROR:
+          console.error(message);
+          break;
+
+        default:
+          console.log(message);
+          break;
+      }
+    }
+  }]);
+
+  return DebugService;
+}();
+;// CONCATENATED MODULE: ./app/modules/authentication/entities/Window.js
+var OperationStatus = {
+  READY: "ready",
+  ERROR: "error",
+  OK: "ok",
+  INVALID_DOMAIN: "invalidDomain",
+  AGE_GATE_FAILED: "agaGateFailed",
+  TWO_FA_FAILED: "2faFailed",
+  INVALID_CONFIG: "invalidConfig",
+  MISSING_TICKET: "missingTicket",
+  MISSING_SESSION_ID: "missingSessionId",
+  MISSING_USER_ID: "missingUserId",
+  THIRD_PARTY_COOKIES_DISABLED: "thirdPartyCookiesDisabled",
+  SSO_RETRIEVE_ERROR: "ssoRetrieveError",
+  NO_LOGIN_DATA: "noLoginData"
+};
+var RefreshStatus = {
+  OK: "ok",
+  NO_LOGIN_DATA: "noLoginData",
+  SSO_ERROR: "ssoError",
+  AGE_GATE: "ageGate",
+  USER_ERROR: "userError",
+  INVALID_CONFIG: "invalidConfig",
+  INVALID_TWO_FA_STATUS: "invalidTwoFaStatus"
+};
+var GeneralStatus = {
+  ACTIVATED: "activated",
+  PENDING_ACTIVATION: "pendingActivation"
+};
+var EXTERANL_LOGIN_TYPE = {
+  LOGIN_NONE: "none",
+  LOGIN_PSN: "psn",
+  LOGIN_XBOX: "xbox",
+  LOGIN_TWITCH: "twitch"
+};
+;// CONCATENATED MODULE: ./app/modules/authentication/services/ScriptLoaderService.js
+function ScriptLoaderService_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function ScriptLoaderService_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function ScriptLoaderService_createClass(Constructor, protoProps, staticProps) { if (protoProps) ScriptLoaderService_defineProperties(Constructor.prototype, protoProps); if (staticProps) ScriptLoaderService_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var ScriptLoaderService = /*#__PURE__*/function () {
+  function ScriptLoaderService() {
+    ScriptLoaderService_classCallCheck(this, ScriptLoaderService);
+  }
+
+  ScriptLoaderService_createClass(ScriptLoaderService, [{
+    key: "loadScript",
+    value: function loadScript(url, id) {
+      var _this = this;
+
+      var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 30000;
+      var reloadScript = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      var urls = arguments.length > 4 ? arguments[4] : undefined;
+      return new Promise(function (resolve, reject) {
+        var alreadyLoadedScript = _this.scriptAlreadyLoaded(urls && urls.length ? urls : [url]);
+
+        if (alreadyLoadedScript && !reloadScript) {
+          return resolve();
+        }
+
+        var prior = document.getElementsByTagName("head")[0];
+
+        if (alreadyLoadedScript && reloadScript) {
+          prior.removeChild(alreadyLoadedScript);
+        }
+
+        var script = document.createElement("script");
+        script.setAttribute("id", id);
+        script.async = 1;
+        prior.appendChild(script);
+        var resolved = false;
+        var timeoutVar = setTimeout(function () {
+          if (!resolved) {
+            reject();
+          }
+        }, timeout);
+
+        script.onload = script.onreadystatechange = function (_, isAbort) {
+          if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
+            script.onload = script.onreadystatechange = null;
+            script = undefined;
+
+            if (!isAbort) {
+              resolved = true;
+              clearTimeout(timeoutVar);
+              resolve();
+            }
+          }
+        };
+
+        script.src = url;
+      });
+    }
+  }, {
+    key: "scriptAlreadyLoaded",
+    value: function scriptAlreadyLoaded(urls) {
+      var array = document.getElementsByTagName("script");
+      var found = null;
+
+      var _loop = function _loop(i) {
+        if (array.item(i).getAttribute("src") && urls.find(function (url) {
+          var urlToSearchBy = url.split("://").length > 1 ? url.split("://")[1] : url;
+          var scriptSrc = array.item(i).getAttribute("src").split("://").length > 1 ? array.item(i).getAttribute("src").split("://")[1] : array.item(i).getAttribute("src");
+
+          if (!urlToSearchBy || !scriptSrc) {
+            return false;
+          }
+
+          return scriptSrc.indexOf(urlToSearchBy) !== -1 || urlToSearchBy.indexOf(scriptSrc) !== -1;
+        })) {
+          found = array.item(i);
+          return "break";
+        }
+      };
+
+      for (var i = 0; i < array.length; i++) {
+        var _ret = _loop(i);
+
+        if (_ret === "break") break;
+      }
+
+      return found;
+    }
+  }]);
+
+  return ScriptLoaderService;
+}();
+;// CONCATENATED MODULE: ./app/utils/getLoginUrl.js
+
+function getLoginUrl_getLoginUrl(loginUrl, connectEndpoint, options, externalLoginType) {
+  var connectUrl = loginUrl;
+
+  if (externalLoginType || externalLoginType !== EXTERANL_LOGIN_TYPE.LOGIN_NONE) {
+    switch (externalLoginType) {
+      case EXTERANL_LOGIN_TYPE.LOGIN_PSN:
+        connectUrl = "".concat(connectEndpoint, "/psn-external");
+        break;
+
+      case EXTERANL_LOGIN_TYPE.LOGIN_XBOX:
+        connectUrl = "".concat(connectEndpoint, "/xbox-external");
+        break;
+
+      case EXTERANL_LOGIN_TYPE.LOGIN_TWITCH:
+        connectUrl = "".concat(connectEndpoint, "/twitch-external");
+        break;
+
+      default:
+        connectUrl = loginUrl;
+    }
+  }
+
+  var url = "".concat(connectUrl, "?appId=").concat(options.appId, "&lang=").concat(options.lang, "&nextUrl=").concat(encodeURIComponent(options.nextUrl));
+
+  if (options.genomeId) {
+    url = "".concat(connectUrl, "?appId=").concat(options.appId, "&genomeId=").concat(options.genomeId, "&lang=").concat(options.lang, "&nextUrl=").concat(encodeURIComponent(options.nextUrl));
+  }
+
+  return url;
+}
+;// CONCATENATED MODULE: ./app/modules/authentication/services/UbisoftConnectService.js
+function UbisoftConnectService_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function UbisoftConnectService_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function UbisoftConnectService_createClass(Constructor, protoProps, staticProps) { if (protoProps) UbisoftConnectService_defineProperties(Constructor.prototype, protoProps); if (staticProps) UbisoftConnectService_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+var UbisoftConnectService = /*#__PURE__*/function () {
+  function UbisoftConnectService(debugService, config, integratorConfig) {
+    UbisoftConnectService_classCallCheck(this, UbisoftConnectService);
+
+    this.debugService = debugService;
+    this.config = config;
+    this.integratorConfig = integratorConfig;
+    this.scriptsLoaded = false;
+    this.isInitialized = false;
+    this.getTicketTimeout = 3000;
+    this.scriptsTimeout = 30000;
+    this.jqueryUrl = "https://code.jquery.com/jquery-2.2.4.min.js";
+    this.scriptLoader = new ScriptLoaderService();
+    this.localLogoutExpirationSeconds = 30;
+  }
+
+  UbisoftConnectService_createClass(UbisoftConnectService, [{
+    key: "enableDebug",
+    value: function enableDebug() {
+      this.debugService.enableDebug();
+    }
+  }, {
+    key: "disableDebug",
+    value: function disableDebug() {
+      this.debugService.disableDebug();
+    }
+  }, {
+    key: "changeScriptsTimeoutTo",
+    value: function changeScriptsTimeoutTo(value) {
+      this.scriptsTimeout = value;
+      return this;
+    }
+  }, {
+    key: "changeGetTicketTimeout",
+    value: function changeGetTicketTimeout(value) {
+      this.getTicketTimeout = value;
+      return this;
+    }
+  }, {
+    key: "loadScripts",
+    value: function loadScripts() {
+      var _this = this;
+
+      if (this.scriptsLoaded) {
+        this.debugService.log("[Ubisoft Connect] Scripts already loaded. Continue...");
+        return Promise.resolve();
+      }
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot load scripts. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      var jqueryPromise = Promise.resolve();
+
+      if (!window.jQuery) {
+        this.debugService.log('[Ubisoft Connect] No jQuery present. Loading jquery from "' + this.jqueryUrl + '" ...');
+        jqueryPromise = this.scriptLoader.loadScript(this.jqueryUrl, "overlay-jquery", this.scriptsTimeout);
+      }
+
+      return jqueryPromise.then(function () {
+        _this.debugService.log(["[Ubisoft Connect] Loaded jQuery.", "[Ubisoft Connect] Loading Connect JS."]);
+
+        return _this.scriptLoader.loadScript("".concat(_this.config.connectJsUrl, "?t=").concat(1738589467), "overlay-connectJs", _this.scriptsTimeout, false, ["https://ubistatic2-a.ubisoft.com/uplay-connect/v3/test/default/sdk/connectSdkPublic.js", "https://ubistatic2-a.ubisoft.com/uplay-connect/v3/dev/default/sdk/connectSdkPublic.js", "https://ubistatic2-a.ubisoft.com/uplay-connect/v3/uat/default/sdk/connectSdkPublic.js", "https://ubistatic2-a.ubisoft.com/uplay-connect/v3/cert2/default/sdk/connectSdkPublic.js", "https://ubistatic2-a.ubisoft.com/uplay-connect/v3/prod/default/sdk/connectSdkPublic.js"]).then(function () {
+          _this.debugService.log("[Ubisoft Connect] Loaded scripts");
+
+          _this.scriptsLoaded = true;
+        })["catch"](function (error) {
+          _this.debugService.warn("[Ubisoft Connect] Cannot loadScripts. An error has occured.");
+
+          throw error;
+        });
+      });
+    }
+  }, {
+    key: "getLoginUrl",
+    value: function getLoginUrl(nextUrl, locale, externalLoginType, isInternetExplorer) {
+      getLoginUrl_getLoginUrl(this.config.loginUrl, this.config.connectEndpoint, {
+        appId: this.integratorConfig.appId,
+        genomeId: this.integratorConfig.genomeId,
+        lang: locale,
+        nextUrl: nextUrl
+      }, externalLoginType, isInternetExplorer);
+    }
+  }, {
+    key: "initialize",
+    value: function initialize(nextUrl) {
+      var _this2 = this;
+
+      var withTpc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var localLoginExpirationMinutes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
+      var component = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+      if (!this.scriptsLoaded) {
+        throw new Error("You must first load the Ubisoft Connect scripts via the method loadScripts() before calling the 'initialize' method");
+      }
+
+      if (this.isInitialized) {
+        this.debugService.log("[Ubisoft Connect] Initialized already. Continue...");
+        return Promise.resolve();
+      }
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot initialize. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var timeoutQueue = setTimeout(function () {
+          _this2.debugService.log("[Ubisoft Connect] Cannot initialize for ".concat(component, ". Tiemout exceeded."));
+
+          reject("[Ubisoft Connect] Timeout exceeded");
+        }, 10000);
+
+        if (window.Connect) {
+          if (window.Connect && window.Connect._sdk && window.Connect._sdk.sdkStatus && window.Connect._sdk.sdkStatus.sdkReady) {
+            try {
+              var sender = window.Connect._sdk.configService.config.sender;
+              window.overlayConnectSDK = window.Connect._sdk;
+              window.overlayConnectSDK.setAllConfig(_this2.config.connectEnv.toUpperCase(), _this2.integratorConfig.appId, _this2.integratorConfig.genomeId, _this2.integratorConfig.locale, nextUrl, withTpc, localLoginExpirationMinutes);
+              window.overlayConnectSDK.configService.config.sender = sender;
+              clearTimeout(timeoutQueue);
+
+              _this2.debugService.log("[Ubisoft Connect] Saved connect SDK obj " + component);
+
+              _this2.isInitialized = true;
+              return resolve();
+            } catch (error) {
+              console.log("[Ubisoft Connect] setAllConfig error", error);
+            }
+          }
+
+          _this2.debugService.log("[Ubisoft Connect] Initialize");
+
+          console.log("[Ubisoft Connect] Initialize object", {
+            env: _this2.config.connectEnv.toUpperCase(),
+            appId: _this2.integratorConfig.appId,
+            genomeId: _this2.integratorConfig.genomeId,
+            lang: _this2.integratorConfig.locale,
+            nextUrl: nextUrl,
+            thirdPartyCookiesSupport: withTpc,
+            localLoginExpirationMinutes: localLoginExpirationMinutes
+          });
+          window.Connect.init({
+            env: _this2.config.connectEnv.toUpperCase(),
+            appId: _this2.integratorConfig.appId,
+            genomeId: _this2.integratorConfig.genomeId,
+            lang: _this2.integratorConfig.locale,
+            nextUrl: nextUrl,
+            thirdPartyCookiesSupport: withTpc,
+            localLoginExpirationMinutes: localLoginExpirationMinutes
+          });
+
+          if (window.Connect.sdk && !window.overlayConnectSDK) {
+            window.Connect.sdk.subscribe(function (result) {
+              console.warn("window.Connect.sdk.subscribe");
+              console.warn(result);
+              window.overlayConnectSDK = result;
+              clearTimeout(timeoutQueue);
+
+              _this2.debugService.log("[Ubisoft Connect] Subscribed and aved connect SDK obj for " + component);
+
+              _this2.isInitialized = true;
+              return resolve();
+            });
+          } else {
+            clearTimeout(timeoutQueue);
+
+            _this2.debugService.log("[Ubisoft Connect] connectSDK does not exist");
+
+            return reject();
+          }
+        } else {
+          clearTimeout(timeoutQueue);
+
+          _this2.debugService.log("[Ubisoft Connect] Connect does not exist");
+
+          return reject();
+        }
+      });
+    }
+  }, {
+    key: "getTicket",
+    value: function getTicket() {
+      var _this3 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.error("[Ubisoft Connect] Cannot getTicket. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var gotTicket = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!gotTicket) {
+            _this3.debugService.warn("[Ubisoft Connect] Get ticket timeout.");
+
+            return reject({
+              opId: "GetTicket",
+              errorMessage: "no login data available",
+              status: "error",
+              expirationDate: _this3.getConnectSsoExpirationDate(_this3.config.localLoginExpirationMinutes * 60 * 1000)
+            });
+          }
+        }, _this3.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.getTicket) {
+          _this3.debugService.error("[Ubisoft Connect] Could not find getTicket.");
+
+          return reject({
+            opId: "GetTicket",
+            errorMessage: "no login data available",
+            status: "error",
+            expirationDate: _this3.getConnectSsoExpirationDate(_this3.config.localLoginExpirationMinutes * 60 * 1000)
+          });
+        }
+
+        var getTicket = window.overlayConnectSDK.getTicket();
+
+        if (!getTicket) {
+          _this3.debugService.error("[Ubisoft Connect] Could not find getTicket.");
+
+          return reject({
+            opId: "GetTicket",
+            errorMessage: "no login data available",
+            status: "error",
+            expirationDate: _this3.getConnectSsoExpirationDate(_this3.config.localLoginExpirationMinutes * 60 * 1000)
+          });
+        }
+
+        getTicket.subscribe(function (getTicketResponse) {
+          gotTicket = true;
+          clearTimeout(timeoutQueue);
+
+          if (getTicketResponse && getTicketResponse.status == OperationStatus.OK) {
+            _this3.debugService.log(["[Ubisoft Connect] Got ticket", getTicketResponse]);
+
+            return resolve({
+              opId: getTicketResponse.opId,
+              status: getTicketResponse.status,
+              sessionId: getTicketResponse.payload.sessionId,
+              ticket: getTicketResponse.payload.ticket,
+              token: getTicketResponse.payload.token,
+              user_id: getTicketResponse.payload.userId,
+              expiration: getTicketResponse.payload.expiration || getTicketResponse.expirationDate
+            });
+          }
+
+          _this3.debugService.log(["[Ubisoft Connect] Could not get ticket.", getTicketResponse]);
+
+          return reject(getTicketResponse);
+        });
+      });
+    }
+  }, {
+    key: "logout",
+    value: function logout(ticket, sessionId) {
+      var _this4 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var loggedOut = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!loggedOut) {
+            reject(false);
+          }
+        }, _this4.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.logout) {
+          _this4.debugService.log("[Ubisoft Connect] Could not find logout.");
+
+          return reject(false);
+        }
+
+        window.overlayConnectSDK.logout(ticket, sessionId).subscribe(function (result) {
+          if (result && result.status == OperationStatus.OK) {
+            loggedOut = true;
+            clearTimeout(timeoutQueue);
+
+            _this4.debugService.log("[Ubisoft Connect] logout");
+
+            return resolve(true);
+          }
+
+          reject(false);
+        });
+      });
+    }
+  }, {
+    key: "resetScriptLoading",
+    value: function resetScriptLoading() {
+      this.scriptsLoaded = false;
+      this.isInitialized = false;
+    }
+  }, {
+    key: "getUserData",
+    value: function getUserData(ticket, sesssionId, userId, callback) {
+      var _this5 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot getUserData. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var gotUserData = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!gotUserData) {
+            _this5.debugService.log("[Ubisoft Connect] Get user Data timeout.");
+
+            callback(null);
+            reject();
+          }
+        }, _this5.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.getUserStatus) {
+          _this5.debugService.log("[Ubisoft Connect] Could not find getUserStatus.");
+
+          callback(null);
+          return reject();
+        }
+
+        window.overlayConnectSDK.getUserStatus(ticket, sesssionId, userId).subscribe(function (result) {
+          gotUserData = true;
+          clearTimeout(timeoutQueue);
+
+          if (result && result.status == OperationStatus.OK) {
+            _this5.debugService.log(["[Ubisoft Connect] Got user data", result]);
+
+            callback(result);
+            return resolve(result);
+          } else {
+            _this5.debugService.log(["[Ubisoft Connect] Could not get user data.", result]);
+
+            callback(result);
+            return reject();
+          }
+        });
+      });
+    }
+  }, {
+    key: "triggerEmailActivation",
+    value: function triggerEmailActivation(ticket, sessionId, userId, callback) {
+      var _this6 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot triggerEmailActivation. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var triggeredEmailActivation = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!triggeredEmailActivation) {
+            _this6.debugService.log("[Ubisoft Connect] Triggered email activation timeout.");
+
+            callback(null);
+            reject();
+          }
+        }, _this6.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.triggerEmailActivation) {
+          _this6.debugService.log("[Ubisoft Connect] Could not find triggerEmailActivation.");
+
+          callback(null);
+          return reject();
+        }
+
+        window.overlayConnectSDK.triggerEmailActivation(ticket, sessionId, userId).subscribe(function (result) {
+          triggeredEmailActivation = true;
+          clearTimeout(timeoutQueue);
+
+          if (result && result.status == OperationStatus.OK) {
+            _this6.debugService.log(["[Ubisoft Connect] Triggered email activation", result]);
+
+            callback(result);
+            return resolve(result);
+          } else {
+            _this6.debugService.log(["[Ubisoft Connect] Could not triggered email activation.", result]);
+
+            callback(result);
+            return reject();
+          }
+        });
+      });
+    }
+  }, {
+    key: "setTicket",
+    value: function setTicket(ticket) {
+      var _this7 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot setTicket. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var setTicket = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!setTicket) {
+            _this7.debugService.log("[Ubisoft Connect] Set ticket timeout.");
+
+            reject();
+          }
+        }, _this7.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.setTicket) {
+          _this7.debugService.log("[Ubisoft Connect] Could not set ticket.");
+
+          return reject();
+        }
+
+        window.overlayConnectSDK.setTicket(ticket).subscribe(function (setTicketResponse) {
+          setTicket = true;
+          clearTimeout(timeoutQueue);
+
+          if (setTicketResponse && setTicketResponse.status == OperationStatus.OK) {
+            _this7.debugService.log(["[Ubisoft Connect] Set ticket", setTicketResponse]);
+
+            return resolve({
+              sessionId: setTicketResponse.payload.sessionId,
+              ticket: setTicketResponse.payload.ticket,
+              token: setTicketResponse.payload.token,
+              user_id: setTicketResponse.payload.userId
+            });
+          }
+
+          _this7.debugService.log(["[Ubisoft Connect] Could not set ticket.", setTicketResponse]);
+
+          return reject();
+        });
+      });
+    }
+  }, {
+    key: "getProfiles",
+    value: function getProfiles(ticket, sessionId, userId, callback) {
+      var _this8 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot getProfiles. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var getProfiles = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!getProfiles) {
+            _this8.debugService.log("[Ubisoft Connect] get profiles timeout.");
+
+            callback(null);
+            reject();
+          }
+        }, _this8.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.getProfiles) {
+          _this8.debugService.log("[Ubisoft Connect] Could not get profiles.");
+
+          callback(null);
+          return reject();
+        }
+
+        window.overlayConnectSDK.getProfiles(ticket, sessionId, userId).subscribe(function (result) {
+          getProfiles = true;
+          clearTimeout(timeoutQueue);
+
+          if (result && result.status == OperationStatus.OK) {
+            _this8.debugService.log(["[Ubisoft Connect] Get profiles", result]);
+
+            callback(result);
+            return resolve(result);
+          } else {
+            _this8.debugService.log(["[Ubisoft Connect] Could not get profiles.", result]);
+
+            callback(result);
+            return reject(result);
+          }
+        });
+      });
+    }
+  }, {
+    key: "getTicketFromSsoId",
+    value: function getTicketFromSsoId() {
+      var _this9 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot getTicketFromSsoId. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var getTicketFromSsoId = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!getTicketFromSsoId) {
+            _this9.debugService.log("[Ubisoft Connect] get ticket from SSO ID timeout.");
+
+            reject({
+              opId: "GetTicket",
+              errorMessage: "no login data available",
+              status: "error",
+              expirationDate: _this9.getConnectSsoExpirationDate(_this9.config.localLoginExpirationMinutes * 60 * 1000)
+            });
+          }
+        }, _this9.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.getTicketFromSsoId) {
+          _this9.debugService.log("[Ubisoft Connect] Could not get ticket from SSO ID.");
+
+          return reject({
+            opId: "GetTicket",
+            errorMessage: "no login data available",
+            status: "error",
+            expirationDate: _this9.getConnectSsoExpirationDate(_this9.config.localLoginExpirationMinutes * 60 * 1000)
+          });
+        }
+
+        window.overlayConnectSDK.getTicketFromSsoId(function (result) {
+          clearTimeout(timeoutQueue);
+
+          if (result && result.status == OperationStatus.OK) {
+            _this9.debugService.log(["[Ubisoft Connect] Get ticket from SSO ID", result]);
+
+            return resolve({
+              opId: result.opId,
+              status: result.status,
+              sessionId: result.payload.sessionId,
+              ticket: result.payload.ticket,
+              token: result.payload.token,
+              user_id: result.payload.userId,
+              expiration: result.payload.expiration || result.expirationDate
+            });
+          }
+
+          _this9.debugService.log(["[Ubisoft Connect] Could not get ticket from SSO ID.", result]);
+
+          return reject(result);
+        });
+      });
+    }
+  }, {
+    key: "getConnectUrl",
+    value: function getConnectUrl() {
+      return this.config.connectEndpoint;
+    }
+  }, {
+    key: "getThirdPartyStatus",
+    value: function getThirdPartyStatus() {
+      var _this10 = this;
+
+      if (!UbisoftConnectService.isBrowser()) {
+        this.debugService.log("[Ubisoft Connect] Cannot get third party status. Not in browser mode.");
+        return Promise.reject(null);
+      }
+
+      return new Promise(function (resolve, reject) {
+        var getTicketFromSsoId = false;
+        var timeoutQueue = setTimeout(function () {
+          if (!getTicketFromSsoId) {
+            _this10.debugService.log("[Ubisoft Connect] Get third party status timeout.");
+
+            reject();
+          }
+        }, _this10.getTicketTimeout);
+
+        if (!window.overlayConnectSDK || !window.overlayConnectSDK.getThirdPartyStatus) {
+          _this10.debugService.log("[Ubisoft Connect] Could not get third party status.");
+
+          return reject();
+        }
+
+        window.overlayConnectSDK.getThirdPartyStatus().subscribe(function (thirdPartyStatus) {
+          _this10.debugService.log("[Ubisoft Connect] Got third party status: ".concat(thirdPartyStatus.status, "."));
+
+          clearTimeout(timeoutQueue);
+
+          if (thirdPartyStatus.status === OperationStatus.OK) {
+            return resolve(true);
+          }
+
+          return resolve(false);
+        });
+      });
+    }
+  }, {
+    key: "getConnectSsoExpirationDate",
+    value: function getConnectSsoExpirationDate(expiration) {
+      var date = new Date();
+      date.setTime(date.getTime() + expiration);
+      return date.getTime().toString();
+    }
+  }], [{
+    key: "isBrowser",
+    value: function isBrowser() {
+      return typeof window !== "undefined";
+    }
+  }]);
+
+  return UbisoftConnectService;
+}();
+;// CONCATENATED MODULE: ./app/utils/getQueryParameters.js
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function getQueryParameters(str) {
+  var params = str ? str : window.self.location.search ? window.self.location.search : window.location.href.split("?").length > 1 ? "?".concat(window.location.href.split("?")[1]) : "";
+  return params.replace(/(^\?)/, "").split("&").map(function (n) {
+    n = n.split("=");
+    var obj = {};
+
+    if (n[0]) {
+      obj[decodeURIComponent(n[0])] = decodeURIComponent(n[1]);
+    }
+
+    return obj;
+  }).reduce(function (previousValue, currentValue) {
+    return previousValue ? _objectSpread(_objectSpread({}, previousValue), currentValue) : currentValue;
+  });
+}
+;// CONCATENATED MODULE: ./app/modules/integrator/communication/services/ConnectService.js
+function ConnectService_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function ConnectService_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ConnectService_ownKeys(Object(source), !0).forEach(function (key) { ConnectService_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ConnectService_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function ConnectService_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function ConnectService_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function ConnectService_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function ConnectService_createClass(Constructor, protoProps, staticProps) { if (protoProps) ConnectService_defineProperties(Constructor.prototype, protoProps); if (staticProps) ConnectService_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+
+
+var ConnectService = /*#__PURE__*/function () {
+  function ConnectService(appId, genomeId, config, integratorConfig) {
+    ConnectService_classCallCheck(this, ConnectService);
+
+    this.CONNECTerror = "OverlayConnectError";
+    this.CONNECTloginData = "OverlayConnectLoginData";
+    this.CONNECTssoExpiration = "OverlayConnectSsoExpiration";
+    this.CONNECTLogOut = "OverlayConnectLogOut";
+    this.CONNECTFormerSsoID = "OverlayFormerSsoID";
+    this.CONNECTFormerUrl = "OverlayFormerUrl";
+    this.ubisoftConnectService;
+    this.debugService;
+    this.config;
+    this.thirdPartyStatus;
+    this.config = config;
+    this.debugService = new DebugService();
+    this.ubisoftConnectService = new UbisoftConnectService(this.debugService, this.config, integratorConfig);
+    this.ubisoftConnectService.changeGetTicketTimeout(3000);
+    this.ubisoftConnectService.changeScriptsTimeoutTo(30000);
+    var enableDebug = integratorConfig.enableDebug !== undefined ? integratorConfig.enableDebug : config.enableDebug;
+
+    if (enableDebug) {
+      this.ubisoftConnectService.enableDebug();
+    } else {
+      this.ubisoftConnectService.disableDebug();
+    }
+  }
+
+  ConnectService_createClass(ConnectService, [{
+    key: "refreshIdentityFlow",
+    value: function refreshIdentityFlow(nextUrl, payload, withTpc, leaveLocalStorageEmpty) {
+      var _this = this;
+
+      try {
+        return this.check(nextUrl, false, withTpc, "refreshIdentityFlow").then(function () {
+          return _this.ubisoftConnectService.getThirdPartyStatus().then(function (thirdPartyStatus) {
+            _this.thirdPartyStatus = thirdPartyStatus;
+
+            if (thirdPartyStatus) {
+              return _this.authenticate(nextUrl, false, withTpc, leaveLocalStorageEmpty, payload);
+            }
+
+            return _this.refreshIdentityFlowWhenThirdPartyStatusDisabled(nextUrl, payload, withTpc, leaveLocalStorageEmpty);
+          });
+        });
+      } catch (error) {
+        this.debugService.info("[ConnectService] refreshIdentityFlow error");
+        this.debugService.error(error);
+        return Promise.reject(error);
+      }
+    }
+  }, {
+    key: "refreshIdentityFlowWhenThirdPartyStatusDisabled",
+    value: function refreshIdentityFlowWhenThirdPartyStatusDisabled(nextUrl, payload, withTpc, leaveLocalStorageEmpty, alreadyTriedToAuthenticate) {
+      var connectErrorFromLocalStorage = this.getItemFromLocalStorage(this.CONNECTerror);
+      var connectLoginDataFromLocalStorage = this.getItemFromLocalStorage(this.CONNECTloginData);
+
+      if ((connectLoginDataFromLocalStorage || connectErrorFromLocalStorage) && !payload.afterLogin && !payload.isReInit) {
+        this.debugService.info("[ConnectService] refreshIdentityFlow: has connectLoginDataFromLocalStorage & not afterLogin & not isReInit");
+        var expiration = this.getCONNECTssoExpiration() ? this.getCONNECTssoExpiration() : connectLoginDataFromLocalStorage ? connectLoginDataFromLocalStorage["expiration"] : connectErrorFromLocalStorage ? connectErrorFromLocalStorage["expirationDate"] : null;
+
+        if (expiration && !this.getIsExpired(expiration)) {
+          this.debugService.info("[ConnectService] refreshIdentityFlow: is not expired");
+          console.log("connectLoginDataFromLocalStorage");
+          console.log(connectLoginDataFromLocalStorage);
+          return Promise.resolve(connectLoginDataFromLocalStorage);
+        }
+
+        this.debugService.info("[ConnectService] refreshIdentityFlow: expired");
+        this.removeItemFromLocalStorage(this.CONNECTerror);
+        this.removeItemFromLocalStorage(this.CONNECTloginData);
+        this.removeCONNECTssoExpiration();
+
+        if (alreadyTriedToAuthenticate) {
+          return Promise.reject({
+            opId: "GetTicket",
+            errorMessage: "no login data available",
+            status: "error",
+            expirationDate: this.ubisoftConnectService.getConnectSsoExpirationDate(this.ubisoftConnectService.localLogoutExpirationSeconds * 1000)
+          });
+        }
+
+        return this.authenticate(nextUrl, false, withTpc, leaveLocalStorageEmpty);
+      }
+
+      if (payload.afterLogin || payload.isReInit) {
+        this.debugService.info("[ConnectService] refreshIdentityFlow: is afterLogin: ".concat(payload.afterLogin, " | is isReInit: ").concat(payload.isReInit));
+        this.removeItemFromLocalStorage(this.CONNECTerror);
+        this.removeItemFromLocalStorage(this.CONNECTloginData);
+        this.removeCONNECTssoExpiration();
+      }
+
+      if (alreadyTriedToAuthenticate) {
+        return Promise.reject({
+          opId: "GetTicket",
+          errorMessage: "no login data available",
+          status: "error",
+          expirationDate: this.ubisoftConnectService.getConnectSsoExpirationDate(this.ubisoftConnectService.localLogoutExpirationSeconds * 1000)
+        });
+      }
+
+      return this.authenticate(nextUrl, false, withTpc, leaveLocalStorageEmpty);
+    }
+  }, {
+    key: "ssoFlow",
+    value: function ssoFlow(nextUrl) {
+      var _this2 = this;
+
+      var withTpc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      this.debugService.info("[ConnectService] ssoFlow");
+
+      if (getQueryParameters()["connectSsoId"]) {
+        this.setItemInLocalStorage(this.CONNECTFormerSsoID, getQueryParameters()["connectSsoId"]);
+      }
+
+      return this.authenticate(nextUrl, true, withTpc).then(function (data) {
+        _this2.debugService.log(["[ConnectService] ssoFlow success", data]);
+
+        return Promise.resolve(data);
+      })["catch"](function (error) {
+        _this2.debugService.log(["[ConnectService] ssoFlow error", error]);
+
+        return Promise.reject(error);
+      });
+    }
+  }, {
+    key: "refreshStatusFlow",
+    value: function refreshStatusFlow(nextUrl) {
+      var _this3 = this;
+
+      var withTpc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var expirationDate = arguments.length > 2 ? arguments[2] : undefined;
+      this.debugService.info("[ConnectService] refreshStatusFlow");
+      return this.check(nextUrl, false, withTpc, "refreshStatusFlow").then(function () {
+        var data = _this3.getItemFromLocalStorage(_this3.CONNECTloginData) ? _this3.getItemFromLocalStorage(_this3.CONNECTloginData) : null;
+
+        if (_this3.getIsExpired(expirationDate)) {
+          _this3.debugService.info("[ConnectService] refreshStatusFlow is expired");
+
+          _this3.removeItemFromLocalStorage(_this3.CONNECTloginData);
+        }
+
+        if (data) {
+          _this3.debugService.log(["[ConnectService] refreshStatusFlow success", data]);
+
+          return new Promise(function (resolve) {
+            return resolve(data);
+          });
+        }
+
+        var error = {
+          opId: "GetTicket",
+          errorMessage: "no login data available",
+          status: "error",
+          expirationDate: expirationDate
+        };
+
+        if (expirationDate) {
+          _this3.debugService.info("[ConnectService] refreshStatusFlow set error");
+
+          _this3.setItemInLocalStorage(_this3.CONNECTerror, ConnectService_objectSpread({}, error));
+        }
+
+        _this3.debugService.log(["[ConnectService] refreshStatusFlow error", error]);
+
+        return new Promise(function (resolve, reject) {
+          return reject(error);
+        });
+      });
+    }
+  }, {
+    key: "authenticate",
+    value: function authenticate(nextUrl, isSsoFlow) {
+      var _this4 = this;
+
+      var withTpc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var leaveLocalStorageEmpty = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      var payload = arguments.length > 4 ? arguments[4] : undefined;
+      this.debugService.info("[ConnectService] authenticate");
+      return this.check(nextUrl, isSsoFlow, withTpc, "authenticate").then(function () {
+        return isSsoFlow ? _this4.ubisoftConnectService.getTicketFromSsoId().then(function (data) {
+          _this4.debugService.log("[ConnectService] authenticate getTicketFromSsoId success");
+
+          _this4.onAuthSuccess(data, leaveLocalStorageEmpty);
+
+          return Promise.resolve(data);
+        })["catch"](function (error) {
+          _this4.debugService.log(["[ConnectService] authenticate getTicketFromSsoId error", error]);
+
+          return _this4.authenticateWhenGetThirdPartyStatusInconsistency(error, nextUrl, withTpc, leaveLocalStorageEmpty, payload)["catch"](function (e) {
+            return console.log('[ConnectService] error', e);
+          });
+          ;
+        }) : _this4.ubisoftConnectService.getTicket().then(function (data) {
+          _this4.debugService.log("[ConnectService] authenticate getTicket success");
+
+          _this4.onAuthSuccess(data, leaveLocalStorageEmpty);
+
+          return Promise.resolve(data);
+        })["catch"](function (error) {
+          _this4.debugService.log(["[ConnectService] authenticate getTicket error", error]);
+
+          return _this4.authenticateWhenGetThirdPartyStatusInconsistency(error, nextUrl, withTpc, leaveLocalStorageEmpty, payload)["catch"](function (e) {
+            return console.log('[ConnectService] error', e);
+          });
+        });
+      });
+    }
+  }, {
+    key: "authenticateWhenGetThirdPartyStatusInconsistency",
+    value: function authenticateWhenGetThirdPartyStatusInconsistency(error, nextUrl) {
+      var withTpc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var leaveLocalStorageEmpty = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      var payload = arguments.length > 4 ? arguments[4] : undefined;
+
+      if (this.thirdPartyStatus && error.status === OperationStatus.THIRD_PARTY_COOKIES_DISABLED) {
+        this.debugService.log(["[ConnectService] authenticate third party status inconsistency", error]);
+        return this.refreshIdentityFlowWhenThirdPartyStatusDisabled(nextUrl, payload, withTpc, leaveLocalStorageEmpty, true);
+      }
+
+      this.onAuthError(error, leaveLocalStorageEmpty);
+      return Promise.reject(error);
+    }
+  }, {
+    key: "triggerEmailActivation",
+    value: function triggerEmailActivation(ticket, sessionId, userId, nextUrl, callback, iframeCallback) {
+      var _this5 = this;
+
+      var withTpc = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : true;
+      this.debugService.info("[ConnectService] triggerEmailActivation");
+      return this.check(nextUrl, false, withTpc, "triggerEmailActivation").then(function () {
+        return _this5.ubisoftConnectService.triggerEmailActivation(ticket, sessionId, userId, function (data) {
+          if (data) {
+            callback(data);
+            iframeCallback();
+          } else {
+            callback({
+              errorMessage: "missingTicket",
+              opId: "TriggerEmailActivation",
+              status: "missingTicket"
+            });
+          }
+        });
+      });
+    }
+  }, {
+    key: "logout",
+    value: function logout(ticket, sessionId, nextUrl) {
+      var _this6 = this;
+
+      var withTpc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+      this.debugService.info("[ConnectService] logout");
+      this.removeAllOverlayDataFromLocaleStorage();
+      this.setItemInLocalStorage(this.CONNECTLogOut, "true");
+      this.setItemInLocalStorage(this.CONNECTerror, {
+        opId: "GetTicket",
+        errorMessage: "no login data available",
+        status: "error",
+        expirationDate: this.ubisoftConnectService.getConnectSsoExpirationDate(this.ubisoftConnectService.localLogoutExpirationSeconds * 1000)
+      });
+      return this.check(nextUrl, false, withTpc, "logout").then(function () {
+        return _this6.ubisoftConnectService.logout(ticket, sessionId);
+      });
+    }
+  }, {
+    key: "lgdOutFlow",
+    value: function lgdOutFlow(nextUrl, thirdPartyCookiesSupport, onConnect) {
+      var _this7 = this;
+
+      return this.check(nextUrl, false, thirdPartyCookiesSupport, "refreshIdentity lgdOut").then(function () {
+        _this7.removeItemFromLocalStorage(_this7.CONNECTLogOut);
+
+        onConnect(OVERLAY_ON_CONNECT_ACTION_TYPE.LOGOUT, {
+          opId: "GetTicket",
+          status: "error",
+          errorMessage: "no login data available"
+        });
+        return new Promise(function (resolve, reject) {
+          return reject(null);
+        });
+      });
+    }
+  }, {
+    key: "changeConfig",
+    value: function changeConfig(config) {
+      this.removeAllOverlayDataFromLocaleStorage();
+      this.ubisoftConnectService.resetScriptLoading();
+      this.config = config;
+    }
+  }, {
+    key: "getUserData",
+    value: function getUserData(ticket, sessionId, userId, nextUrl, callback) {
+      var _this8 = this;
+
+      var withTpc = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : true;
+      this.debugService.info("[ConnectService] getUserData");
+      return this.check(nextUrl, false, withTpc, "getUserData").then(function () {
+        return _this8.ubisoftConnectService.getUserData(ticket, sessionId, userId, function (data) {
+          if (data) {
+            _this8.debugService.info(["[ConnectService] got user data"]);
+
+            callback(data);
+          } else {
+            _this8.debugService.info(["[ConnectService] no user data"]);
+
+            callback({
+              errorMessage: "missingTicket",
+              opId: "GetUserStatus",
+              status: "missingTicket"
+            });
+          }
+        });
+      });
+    }
+  }, {
+    key: "getLoginUrl",
+    value: function getLoginUrl(nextUrl, locale, externalLoginType, isInternetExplorer) {
+      this.debugService.info("[ConnectService] getLoginUrl");
+      return this.ubisoftConnectService.getLoginUrl(nextUrl, locale, externalLoginType, isInternetExplorer);
+    }
+  }, {
+    key: "_401Flow",
+    value: function _401Flow(nextUrl, noTicketCallBack, gotTicketCallBack) {
+      var _this9 = this;
+
+      var withTpc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+      this.debugService.info("[ConnectService] _401Flow");
+      return this.check(nextUrl, false, withTpc, "_401Flow").then(function () {
+        var ticketObj = window.overlayConnectSDK.getTicket();
+
+        if (!ticketObj) {
+          console.error('Error');
+          return noTicketCallBack();
+        }
+
+        window.overlayConnectSDK.getTicket().subscribe(function (getTicketResponse) {
+          _this9.debugService.warn(["[401] IN 401_stuff...", getTicketResponse]);
+
+          if (getTicketResponse.status !== OperationStatus.OK) {
+            noTicketCallBack();
+            return;
+          }
+
+          gotTicketCallBack(getTicketResponse);
+        });
+      });
+    } // TODO remove isSsoFlow
+    // eslint-disable-next-line no-unused-vars
+
+  }, {
+    key: "check",
+    value: function check(nextUrl) {
+      var _this10 = this;
+
+      var isSsoFlow = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var withTpc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var component = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "check";
+      this.debugService.info("[ConnectService] check: ".concat(component));
+      var promise = Promise.resolve();
+
+      if (!window.Connect || !window.overlayConnectSDK) {
+        this.debugService.warn("[ConnectService] Connect || overlayConnectSDK objects not found");
+        promise = this.ubisoftConnectService.loadScripts().then(function () {
+          return _this10.ubisoftConnectService.initialize(nextUrl, withTpc, _this10.config.localLoginExpirationMinutes, component);
+        });
+      } else {
+        this.debugService.log("[ConnectService] Connect || overlayConnectSDK already created");
+        this.debugService.log(window.Connect);
+        this.debugService.log(window.overlayConnectSDK);
+      }
+
+      return promise;
+    }
+  }, {
+    key: "getConnectUrl",
+    value: function getConnectUrl() {
+      return this.ubisoftConnectService.getConnectUrl();
+    }
+  }, {
+    key: "getTicket",
+    value: function getTicket(nextUrl, callback, identity) {
+      var _this11 = this;
+
+      var withTpc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+      this.debugService.info("[ConnectService] getTicket");
+      return this.check(nextUrl, false, withTpc, "getTicket").then(function () {
+        return _this11.ubisoftConnectService.getThirdPartyStatus().then(function (thirdPartyStatus) {
+          if (_this11.getItemFromLocalStorage(_this11.CONNECTLogOut)) {
+            _this11.removeItemFromLocalStorage(_this11.CONNECTLogOut);
+
+            callback({
+              errorMessage: "no login data available",
+              opId: "GetTicket",
+              status: "error"
+            });
+            return Promise.resolve();
+          }
+
+          if (_this11.getItemFromLocalStorage(_this11.CONNECTerror)) {
+            callback(_this11.getItemFromLocalStorage(_this11.CONNECTerror));
+            return Promise.resolve();
+          }
+
+          if (_this11.getItemFromLocalStorage(_this11.CONNECTloginData)) {
+            _this11.getTicketCallbackOnSuccess(callback, identity, _this11.getItemFromLocalStorage(_this11.CONNECTloginData));
+
+            return Promise.resolve();
+          }
+
+          _this11.thirdPartyStatus = thirdPartyStatus;
+
+          if (thirdPartyStatus) {
+            return _this11.getTicketWithCallback(callback, identity);
+          }
+
+          return _this11.getTicketWithCallback(callback, identity);
+        });
+      });
+    }
+  }, {
+    key: "getTicketWithCallback",
+    value: function getTicketWithCallback(callback, identity) {
+      var _this12 = this;
+
+      return this.ubisoftConnectService.getTicket().then(function (data) {
+        _this12.getTicketCallbackOnSuccess(callback, identity, data);
+      })["catch"](function (error) {
+        callback({
+          opId: error && error["opId"] ? error["opId"] : "GetTicket",
+          status: error && error["status"] ? error["status"] : "no login data available",
+          errorMessage: error && error["errorMessage"] ? error["errorMessage"] : "error"
+        });
+      });
+    }
+  }, {
+    key: "getTicketCallbackOnSuccess",
+    value: function getTicketCallbackOnSuccess(callback, identity, data) {
+      callback({
+        opId: data["opId"],
+        status: data["status"] ? data["status"] : "ok",
+        payload: {
+          expiration: data["expiration"],
+          sessionId: data["sessionId"],
+          ticket: data["ticket"],
+          userId: data["user_id"],
+          nameOnPlatform: identity["nameOnPlatform"]
+        }
+      });
+    }
+  }, {
+    key: "getProfiles",
+    value: function getProfiles(ticket, sessionId, userId, callback, nextUrl) {
+      var _this13 = this;
+
+      var withTpc = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : true;
+      this.debugService.info("[ConnectService] getProfiles");
+      return this.check(nextUrl, false, withTpc, "getProfiles").then(function () {
+        return _this13.ubisoftConnectService.getProfiles(ticket, sessionId, userId, function (data) {
+          if (data) {
+            callback(data);
+          } else {
+            callback({
+              errorMessage: "missingTicket",
+              opId: "GetProfiles",
+              status: "missingTicket"
+            });
+          }
+        });
+      });
+    }
+  }, {
+    key: "getLocalStorageKey",
+    value: function getLocalStorageKey(key) {
+      return "".concat(this.config.env.toUpperCase()).concat(key);
+    }
+  }, {
+    key: "removeItemFromLocalStorage",
+    value: function removeItemFromLocalStorage(key) {
+      localStorage.removeItem(this.getLocalStorageKey(key));
+    }
+  }, {
+    key: "getItemFromLocalStorage",
+    value: function getItemFromLocalStorage(key) {
+      var item = localStorage.getItem(this.getLocalStorageKey(key));
+      return !item ? null : JSON.parse(item);
+    }
+  }, {
+    key: "setItemInLocalStorage",
+    value: function setItemInLocalStorage(key, item) {
+      // item = typeof item === "object" ? JSON.stringify(item) : item;
+      try {
+        localStorage.setItem(this.getLocalStorageKey(key), JSON.stringify(item));
+      } catch (err) {
+        this.removeItemFromLocalStorage(key);
+        console.error(err);
+        console.warn("Removing the item " + key + " from local storage since its full");
+      }
+    }
+  }, {
+    key: "getIsExpired",
+    value: function getIsExpired(expiration) {
+      var isExpired = expiration && new Date(parseInt(expiration)).getTime() <= new Date().getTime();
+      return isExpired;
+    }
+  }, {
+    key: "removeAllOverlayDataFromLocaleStorage",
+    value: function removeAllOverlayDataFromLocaleStorage() {
+      this.removeItemFromLocalStorage(this.CONNECTloginData);
+      this.removeItemFromLocalStorage(this.CONNECTerror);
+      this.removeItemFromLocalStorage(this.CONNECTssoExpiration);
+      this.removeItemFromLocalStorage(this.CONNECTFormerSsoID);
+      this.removeItemFromLocalStorage(this.CONNECTLogOut);
+    }
+  }, {
+    key: "removeAllDataFromLocaleStorage",
+    value: function removeAllDataFromLocaleStorage() {
+      this.removeItemFromLocalStorage("errorRefreshData");
+      this.removeItemFromLocalStorage("ssoCallBackStatusKey");
+      this.removeItemFromLocalStorage("loginData");
+      this.removeAllOverlayDataFromLocaleStorage();
+    }
+  }, {
+    key: "onAuthSuccess",
+    value: function onAuthSuccess(data) {
+      var leaveLocalStorageEmpty = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      this.debugService.info("[ConnectService] onAuthSuccess");
+
+      if (leaveLocalStorageEmpty) {
+        return;
+      }
+
+      this.setItemInLocalStorage(this.CONNECTloginData, {
+        opId: data.opId,
+        ticket: data.ticket,
+        user_id: data.user_id,
+        sessionId: data.sessionId,
+        token: data.token,
+        expiration: data.expiration
+      });
+      this.setCONNECTssoExpirationInLocalStorage(RefreshStatus.OK);
+    }
+  }, {
+    key: "onAuthError",
+    value: function onAuthError(error) {
+      var leaveLocalStorageEmpty = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      this.debugService.info("[ConnectService] onAuthError");
+
+      if (leaveLocalStorageEmpty) {
+        return;
+      }
+
+      this.setItemInLocalStorage(this.CONNECTloginData, null);
+      this.setItemInLocalStorage(this.CONNECTerror, error);
+      var key = null;
+
+      if (error && error.status) {
+        switch (error.status) {
+          case OperationStatus.READY:
+          case OperationStatus.OK:
+            key = RefreshStatus.OK;
+            break;
+
+          case OperationStatus.ERROR:
+          case OperationStatus.INVALID_DOMAIN:
+          case OperationStatus.MISSING_TICKET:
+          case OperationStatus.MISSING_SESSION_ID:
+          case OperationStatus.MISSING_USER_ID:
+          case OperationStatus.THIRD_PARTY_COOKIES_DISABLED:
+          case OperationStatus.NO_LOGIN_DATA:
+            key = RefreshStatus.NO_LOGIN_DATA;
+            break;
+
+          case OperationStatus.SSO_RETRIEVE_ERROR:
+            key = RefreshStatus.SSO_ERROR;
+            break;
+
+          case OperationStatus.AGE_GATE_FAILED:
+            key = RefreshStatus.AGE_GATE;
+            break;
+
+          case OperationStatus.INVALID_CONFIG:
+            key = RefreshStatus.INVALID_CONFIG;
+            break;
+
+          case OperationStatus.TWO_FA_FAILED:
+            key = RefreshStatus.INVALID_TWO_FA_STATUS;
+            break;
+
+          default:
+            key = RefreshStatus.NO_LOGIN_DATA;
+            break;
+        }
+      }
+
+      this.setCONNECTssoExpirationInLocalStorage(key);
+    }
+  }, {
+    key: "setCONNECTssoExpirationInLocalStorage",
+    value: function setCONNECTssoExpirationInLocalStorage(withKey, withExpiration) {
+      var _this14 = this;
+
+      var CONNECTssoExpiration = this.getItemFromLocalStorage(this.CONNECTssoExpiration);
+
+      if (!getQueryParameters()["refreshStatus"] && !withKey) {
+        return;
+      }
+
+      var keys = withKey ? [withKey] : getQueryParameters()["refreshStatus"] ? [getQueryParameters()["refreshStatus"]] : ["ok", "noLoginData"];
+      var localStorageObj = {};
+      keys.forEach(function (key) {
+        localStorageObj[key] = withExpiration ? withExpiration : _this14.ubisoftConnectService.getConnectSsoExpirationDate(_this14.config.localLoginExpirationMinutes * 60 * 1000);
+      });
+
+      if (!CONNECTssoExpiration) {
+        console.warn(localStorageObj);
+        this.setItemInLocalStorage(this.CONNECTssoExpiration, localStorageObj);
+        return;
+      }
+
+      console.warn(localStorageObj);
+      this.setItemInLocalStorage(this.CONNECTssoExpiration, ConnectService_objectSpread(ConnectService_objectSpread({}, CONNECTssoExpiration), localStorageObj));
+    }
+  }, {
+    key: "getCONNECTssoExpiration",
+    value: function getCONNECTssoExpiration(ssoExpirationKey) {
+      var CONNECTssoExpiration = this.getItemFromLocalStorage(this.CONNECTssoExpiration);
+
+      if (!CONNECTssoExpiration) {
+        return null;
+      }
+
+      if (ssoExpirationKey) {
+        return CONNECTssoExpiration[ssoExpirationKey];
+      }
+
+      var refreshStatus = getQueryParameters()["refreshStatus"];
+
+      if (refreshStatus && CONNECTssoExpiration[refreshStatus]) {
+        return CONNECTssoExpiration[refreshStatus];
+      }
+
+      return CONNECTssoExpiration["ok"] || CONNECTssoExpiration["noLoginData"];
+    }
+  }, {
+    key: "removeCONNECTssoExpiration",
+    value: function removeCONNECTssoExpiration() {
+      var CONNECTssoExpiration = this.getItemFromLocalStorage(this.CONNECTssoExpiration);
+
+      if (!CONNECTssoExpiration) {
+        return;
+      }
+
+      var key = getQueryParameters()["refreshStatus"];
+
+      if (key) {
+        delete CONNECTssoExpiration[key];
+        this.setItemInLocalStorage(this.CONNECTssoExpiration, CONNECTssoExpiration);
+        return;
+      }
+
+      this.removeItemFromLocalStorage(this.CONNECTssoExpiration);
+    }
+  }]);
+
+  return ConnectService;
+}();
+;// CONCATENATED MODULE: ./app/modules/locale/entities/LocalStrings.js
+var LOCALE_STRINGS_ARRAY = ["ar-AE", "zh-CN", "zh-TW", "zh-HK", "cs-CZ", "da-DK", "nl-NL", "en-GB", "en-CA", "en-US", "fi-FI", "fr-FR", "fr-CA", "de-DE", "hu-HU", "it-IT", "ja-JP", "ko-KR", "nb-NO", "pl-PL", "pt-PT", "pt-BR", "ru-RU", "es-ES", "es-MX", "sv-SE", "th-TH", "tr-TR", "uk-UA"];
+var LOCALE_STRINGS_OBJ = {
+  "ar-AE": "ar-AE",
+  "zh-CN": "zh-CN",
+  "zh-TW": "zh-TW",
+  "zh-HK": "zh-TW",
+  "cs-CZ": "cs-CZ",
+  "da-DK": "da-DK",
+  "nl-NL": "nl-NL",
+  "en-GB": "en-GB",
+  "en-CA": "en-CA",
+  "en-US": "en-US",
+  "fi-FI": "fi-FI",
+  "fr-FR": "fr-FR",
+  "fr-CA": "fr-CA",
+  "de-DE": "de-DE",
+  "hu-HU": "hu-HU",
+  "it-IT": "it-IT",
+  "ja-JP": "ja-JP",
+  "ko-KR": "ko-KR",
+  "nb-NO": "nb-NO",
+  "pl-PL": "pl-PL",
+  "pt-PT": "pt-PT",
+  "pt-BR": "pt-BR",
+  "ru-RU": "ru-RU",
+  "es-ES": "es-ES",
+  "es-MX": "es-MX",
+  "sv-SE": "sv-SE",
+  "th-TH": "th-TH",
+  "tr-TR": "tr-TR",
+  "uk-UA": "uk-UA"
+};
+;// CONCATENATED MODULE: ./app/modules/eventListener/Channel.js
+function Channel_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function Channel_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function Channel_createClass(Constructor, protoProps, staticProps) { if (protoProps) Channel_defineProperties(Constructor.prototype, protoProps); if (staticProps) Channel_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+var Channel_Channel = /*#__PURE__*/function () {
+  function Channel(origin) {
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window;
+    var debug = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+    Channel_classCallCheck(this, Channel);
+
+    this.origin = origin;
+    this.target = target;
+    this.debug = debug;
+  }
+
+  Channel_createClass(Channel, [{
+    key: "subscribe",
+    value: function subscribe(topic, callback) {
+      var _this = this;
+
+      if (this.debug) {
+        console.log("Subscribing to \"".concat(topic, "\" ..."));
+      }
+
+      return addCrossDomainEventListener(topic, function (payload) {
+        if (_this.debug) {
+          console.log("Received message for topic \"".concat(topic, "\" and payload: "), payload);
+        }
+
+        return callback(payload);
+      });
+    }
+  }, {
+    key: "unsuscribe",
+    value: function unsuscribe(listener) {
+      return removeCrossDomainEventListener(listener);
+    }
+  }, {
+    key: "send",
+    value: function send(topic, payload) {
+      if (this.debug) {
+        console.log("Sending message for \"".concat(topic, "\" with payload: "), payload);
+      }
+
+      return postMessage(topic, payload, this.origin, this.target);
+    }
+  }, {
+    key: "setDebug",
+    value: function setDebug(debug) {
+      this.debug = debug;
+    }
+  }]);
+
+  return Channel;
+}();
+;// CONCATENATED MODULE: ./app/utils/getLoginNextUrl.js
+function getLoginNextUrl_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function getLoginNextUrl_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? getLoginNextUrl_ownKeys(Object(source), !0).forEach(function (key) { getLoginNextUrl_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : getLoginNextUrl_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function getLoginNextUrl_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function getLoginNextUrl_getLoginNextUrl(env, options, thirdPartyCookiesSupport) {
+  var params = {
+    appId: options.appId,
+    lang: options.lang
+  };
+
+  if ("genomeId" in options) {
+    params = getLoginNextUrl_objectSpread(getLoginNextUrl_objectSpread({}, params), {}, {
+      genomeId: options.genomeId
+    });
+  }
+
+  if (thirdPartyCookiesSupport !== undefined && thirdPartyCookiesSupport !== null) {
+    params = getLoginNextUrl_objectSpread(getLoginNextUrl_objectSpread({}, params), {}, {
+      thirdPartyCookiesSupport: thirdPartyCookiesSupport
+    });
+  }
+
+  if (false) {}
+
+  var queryParams = Object.keys(params).reduce(function (previousValue, currentValue) {
+    return previousValue ? "".concat(previousValue, "&").concat(currentValue, "=").concat(params[currentValue]) : "".concat(currentValue, "=").concat(params[currentValue]);
+  }, "");
+  return "".concat(options.nextUrl, "?").concat(queryParams);
+}
+;// CONCATENATED MODULE: ./app/utils/getCookie.js
+function getCookie(cookieName) {
+  var name = "".concat(cookieName, "=");
+  var ca = document.cookie.split(";");
+
+  for (var i = 0; i < ca.length; i += 1) {
+    var c = ca[i];
+
+    while (c.charAt(0) === " ") {
+      c = c.substring(1);
+    }
+
+    if (c.indexOf(name) !== -1) {
+      return c.substring(name.length, c.length);
+    }
+  }
+
+  return "";
+}
+;// CONCATENATED MODULE: ./app/modules/di/injectableForJs.js
+function injectableForJs(opts) {
+  return function (WrapperClass) {
+    WrapperClass.reflectParamTypes = opts;
+    return WrapperClass;
+  };
+}
+;// CONCATENATED MODULE: ./app/modules/integrator/communication/services/WidgetService.js
+var _dec, _class;
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function WidgetService_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function WidgetService_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? WidgetService_ownKeys(Object(source), !0).forEach(function (key) { WidgetService_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : WidgetService_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function WidgetService_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function WidgetService_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function WidgetService_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function WidgetService_createClass(Constructor, protoProps, staticProps) { if (protoProps) WidgetService_defineProperties(Constructor.prototype, protoProps); if (staticProps) WidgetService_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var isMobileDevice = function isMobileDevice() {
+  /Mobi/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent);
+};
+var isMobileDeviceIOS = function isMobileDeviceIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+};
+var WidgetService = (_dec = injectableForJs([]), _dec(_class = /*#__PURE__*/function () {
+  function WidgetService(config, options, hasInitializedCallback) {
+    WidgetService_classCallCheck(this, WidgetService);
+
+    this.channel = undefined;
+    this.backdrop = undefined;
+    this.iframe = undefined;
+    this.container = undefined;
+    this.backdropListener = undefined;
+    this.connectService = undefined;
+    this.subscriptions = [];
+    this.listeners = [];
+    this.isReInit = false;
+    this.debugService = undefined;
+    this.locale = undefined;
+    this.config = config;
+    this.options = options;
+    this.hasInitializedCallback = hasInitializedCallback;
+    var enableDebug = options.enableDebug !== undefined ? options.enableDebug : config.enableDebug;
+    this.debugService = new DebugService(enableDebug);
+    this.debugService.log("[Overlay Widget] Loaded");
+    this.locale = options.locale;
+    this.connectService = new ConnectService(options.appId, options.genomeId, config, options);
+  }
+
+  WidgetService_createClass(WidgetService, [{
+    key: "cssUrl",
+    get: function get() {
+      return "".concat(this.config.assetsUrl, "/widget.css");
+    }
+  }, {
+    key: "appendDocumentHeadHtml",
+    value: function appendDocumentHeadHtml() {
+      var headHTML = document.getElementsByTagName("head")[0];
+      var link = document.createElement("link");
+      link.type = "text/css";
+      link.rel = "stylesheet";
+      link.href = this.cssUrl;
+      link.id = "overlay-widget-css";
+      headHTML.appendChild(link);
+      return null;
+    }
+  }, {
+    key: "appendContainer",
+    value: function appendContainer(onload) {
+      var _this = this;
+
+      var iframe = document.createElement("iframe");
+      iframe.id = "overlay-iframe";
+      iframe.name = "overlayIframe";
+      iframe.style.display = "none";
+      iframe.scrolling = "no";
+      iframe.style.border = "0";
+      iframe.style.width = "954px";
+      iframe.title = "My Ubisoft Space";
+
+      iframe.onload = function () {
+        iframe.style.display = "";
+
+        if (_this.locale.toLowerCase() === "ar-ae") {
+          iframe.classList.add("overlay-iframe-arab-language");
+        }
+      };
+
+      this.iframe = iframe;
+      var iframeContainer = document.createElement("div");
+      iframeContainer.id = "overlay-container";
+      iframeContainer.style.height = (this.options.height || 50) + "px";
+      iframeContainer.style.width = "50px";
+      iframeContainer.appendChild(iframe);
+      var backdrop = document.createElement("div");
+      backdrop.id = "overlay-backdrop";
+      this.backdrop = backdrop;
+      var container = document.getElementById(this.options.container);
+
+      if (!container) {
+        container = document.getElementById(this.options.container.replace("#", ""));
+      }
+
+      if (!container) {
+        container = document.getElementsByClassName(this.options.container.replace(".", ""));
+
+        if (container || !container[0]) {
+          container = undefined;
+        }
+      }
+
+      container.style.position = "relative";
+      container.style.zIndex = this.options.zIndex ? this.options.zIndex : "1000";
+      backdrop.style.zIndex = this.options.zIndex ? (parseFloat(this.options.zIndex) - 1).toString() : "999";
+
+      if (!container) {
+        throw new Error("Could not find container element '" + this.options.container + "'");
+      }
+
+      container.appendChild(iframeContainer);
+      container.parentElement.appendChild(backdrop);
+      this.container = container;
+      onload(iframe);
+      var src = "".concat(this.config.overlayIndexUrl, "?t=").concat(1738589467, "&");
+      src += "owner=".concat(window.self.location.protocol, "//").concat(window.self.location.host);
+      iframe.src = src;
+    }
+  }, {
+    key: "appendModalContainer",
+    value: function appendModalContainer() {
+      var modalNode = document.createElement("div");
+      var modalNodeContainer = document.createElement("div");
+      var modalOverlay = document.createElement("div");
+      var modalContent = document.createElement("div");
+      var modalCloseButton = document.createElement("div");
+      var modalCloseIcon = document.createElement("i");
+      var body = document.getElementsByTagName("body")[0];
+      modalNode.classList.add("ReactModalPortal");
+      modalNodeContainer.classList.add("ReactModalPortal__Container");
+      modalNode.style.display = "none";
+      modalOverlay.classList.add("ReactModal__Overlay");
+      modalContent.classList.add("ReactModal__Content");
+      modalCloseButton.classList.add("ReactModal__Close__Button");
+      modalCloseIcon.className += "ubico ubico-close";
+      modalCloseButton.appendChild(modalCloseIcon);
+      modalContent.appendChild(modalCloseButton);
+      modalOverlay.appendChild(modalContent);
+      modalNodeContainer.appendChild(modalOverlay);
+      modalNode.appendChild(modalNodeContainer);
+      body.appendChild(modalNode);
+    }
+  }, {
+    key: "bootstrap",
+    value: function bootstrap(options) {
+      var _this2 = this;
+
+      if (options.nextUrl && window.location.href.indexOf(options.nextUrl) === -1) {
+        try {
+          this.connectService.setItemInLocalStorage(this.connectService.CONNECTFormerUrl, window.location.href);
+        } catch (error) {
+          this.debugService.error(error);
+        }
+      }
+
+      if (options.nextUrl && window.location.href.indexOf(this.options.nextUrl) !== -1) {
+        this.refreshIdentity({
+          afterLogin: false,
+          isReInit: false,
+          loginParams: {}
+        });
+        return;
+      }
+
+      if (options.darkBackground == false) {
+        console.warn("Light theme is disabled for the moment");
+      }
+
+      this.options = WidgetService_objectSpread(WidgetService_objectSpread({}, options), {}, {
+        browserScrollbarWidth: this.getCustomScrollbarSpecs().browserScrollbarWidth,
+        scrollbarNegativeMarginValue: this.getCustomScrollbarSpecs().scrollbarNegativeMarginValue,
+        darkBackground: true
+      });
+      this.appendDocumentHeadHtml();
+      this.appendContainer(function (iframe) {
+        _this2.changeLocaleClassOnOverlayContainer(options.locale);
+
+        _this2.changeIsInDesktopResizeClassOnOverlayContainer(options.isInDesktopResize);
+
+        _this2.changeShowSignInTextClassOnOverlayContainer(options.showSignInText);
+
+        var channelOrigin = _this2.config.overlayIndexUrl;
+        _this2.channel = new Channel_Channel(channelOrigin, iframe.contentWindow, _this2.options.enableDebug !== undefined ? _this2.options.enableDebug : _this2.config.enableDebug);
+
+        _this2.setupSubscriptions();
+      });
+      this.appendModalContainer();
+    }
+  }, {
+    key: "setupSubscriptions",
+    value: function setupSubscriptions() {
+      var _this3 = this;
+
+      this.subscriptions = [this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_INITIALIZE, this.handleInitilize.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_SHOW_BACKDROP, this.handleShowBackdrop.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_HIDE_BACKDROP, this.handleHideBackdrop.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_SHOW_MOBILE_TABS, this.handleShowMobileTabs.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_HIDE_MOBILE_TABS, this.handleHideMobileTabs.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_LOGGED_OUT, this.handleLoggedOut.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_RESIZE, this.handleResize.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_OPEN_LOGIN_MODAL, this.handleOpenLoginModal.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_EXPAND, this.handleExpand.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_COLLAPSE, this.handleCollapse.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_LOGGED_IN, this.handleLoggedIn.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_CLOSE_LOGIN_MODAL, this.handleCloseLoginModalAndConnect.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_CHANGE_LOCALE, this.handleChangeLocaleFromCommunicationService.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_ENV_LOADED, this.handleInitEnv.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_CHANGE_IFRAME_HEIGHT, this.handleChangeIframeHeight.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_CHANGE_IFRAME_URL, this.changeIframeUrl.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_TRIGGER_EMAIL_VERIFICATION, this.triggerEmailActivation.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_TRIGGER_CHANGE_CONFIG, this.changeWidgetConfig.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_TRIGGER_USER_DATA, this.getUserData.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_TRIGGER_REFRESH_IDENTITY, this.refreshIdentity.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_401_FLOW, this._401Flow.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_GET_ENV, this.getEnv.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_GET_IFRAME_BOUNDING_CLIENT_RECT, this.handleGetIframeBoundingClientRect.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_OPEN_POPUP_WINDOW, this.handleOpenPopupWindow.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_GET_THIRD_PARTY_STATUS_FOR_LOGIN, this.handleGetThirdPartyStatusForLogin.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_TRIGGER_LOGOUT, this.logout.bind(this)), this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_ON_FRIEND_ACTION, this.handleOnFriendAction.bind(this))];
+
+      if (this.options.collapse) {
+        this.options.collapse(function () {
+          _this3.channel.send(COMMUNICATION_MESSAGES.WIDGET_COLLAPSE);
+        });
+      }
+
+      if (this.options.expandFriends) {
+        this.options.expandFriends(function () {
+          _this3.channel.send(COMMUNICATION_MESSAGES.WIDGET_EXPAND_FRIENDS);
+        });
+      }
+
+      if (this.options.expandPlayerCard) {
+        this.options.expandPlayerCard(function () {
+          _this3.channel.send(COMMUNICATION_MESSAGES.WIDGET_EXPAND_PLAYER_CARD);
+        });
+      }
+
+      if (this.options.expandNotifications) {
+        this.options.expandNotifications(function () {
+          _this3.channel.send(COMMUNICATION_MESSAGES.WIDGET_EXPAND_NOTIFICATIONS);
+        });
+      }
+
+      this.listeners = [this.addCrossDomainEventListener(this.config.connectEndpoint, "connectRoute", "/twitch-callback?code=", function () {
+        _this3.connectService.removeAllDataFromLocaleStorage();
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.ANALYTICS_SDK_LOADED, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.ANALYTICS_SDK_LOADED);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.S_CODE_READY, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.S_CODE_READY);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.S_CODE_REMOVED, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.S_CODE_REMOVED);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_VIEWED, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_VIEWED);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_ACCEPTED, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_ACCEPTED);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_REFUSED, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_REFUSED);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_ANALYTICS_OFF, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_ANALYTICS_OFF);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_ANALYTICS_ON, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_ANALYTICS_ON);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_MEDIA_ANALYTICS_OFF, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_MEDIA_ANALYTICS_OFF);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_MEDIA_ANALYTICS_ON, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_MEDIA_ANALYTICS_ON);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_CUSTOMIZATION_OFF, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_CUSTOMIZATION_OFF);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_CUSTOMIZATION_ON, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_CUSTOMIZATION_ON);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_VIDEOS_OFF, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_VIDEOS_OFF);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_VIDEOS_ON, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.PRIVACY_POLICY_VIDEOS_ON);
+      }), this.addCrossDomainEventListenerWithTopic(ANALYTICS_COMMUNICATION_MESSAGES.THIRD_PARTY_OPT_IN, window.location.origin, function () {
+        _this3.channel.send(ANALYTICS_COMMUNICATION_MESSAGES.THIRD_PARTY_OPT_IN);
+      })];
+    }
+  }, {
+    key: "handleInitilize",
+    value: function handleInitilize() {
+      var _this4 = this;
+
+      this.debugService.log("[Overlay Widget] handleInitilize");
+      var cleanUrl = window.self.location.href;
+      var loginUrl = this.connectService.getLoginUrl(this.getLoginNextUrl(this.locale, this.config.connectEnv), this.locale, this.options.loginExternalType, !!navigator.userAgent.match(/Trident.*rv[ :]*11\./));
+      var connectUrl = this.connectService.getConnectUrl();
+      var options = this.options;
+
+      if (window["adobeAnalytics"]) {
+        options.hasParentSiteTrackingIntegrate = true;
+      } else {
+        options.hasParentSiteTrackingIntegrate = false;
+      } //TC_OPTOUT_SDK is deprecated and will be deleted by trackings team
+
+
+      if (getCookie("TC_OPTOUT_SDK")) {
+        options.hasParentSiteTcOptoutSdkCookieSet = true;
+      } else {
+        options.hasParentSiteTcOptoutSdkCookieSet = false;
+      }
+
+      if (getCookie("UBI_PRIVACY_POLICY_ACCEPTED")) {
+        options.hasParentSiteUbiPrivacyPolicyAcceptedCookieSet = true;
+      } else {
+        options.hasParentSiteUbiPrivacyPolicyAcceptedCookieSet = false;
+      }
+
+      if (getCookie("UBI_PRIVACY_AA_OPTOUT")) {
+        options.hasParentSiteUbiPrivacyAaOptoutCookieSet = true;
+      } else {
+        options.hasParentSiteUbiPrivacyAaOptoutCookieSet = false;
+      }
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_BOOTSTRAP, options);
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_SET_CONNECT_LOGIN_URL, {
+        loginUrl: loginUrl,
+        connectUrl: connectUrl
+      });
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_URL, cleanUrl);
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_INITIAL_WINDOW_HEIGHT, window.innerHeight);
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_IFRAME_BOUNDING_CLIENT_RECT, {
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+        iframeBoundingClientRect: this.getIframeBoundingClientRect()
+      });
+      this.handleOnResize(true);
+      window.addEventListener("resize", this.debounce(function () {
+        return _this4.handleOnResize(false);
+      }, 250));
+      document.getElementsByClassName("ReactModal__Close__Button")[0].addEventListener("click", this.handleCloseLoginModal.bind(this));
+    }
+  }, {
+    key: "handleOnResize",
+    value: function handleOnResize(firstTime) {
+      this.sendOnResizeEvent(firstTime);
+
+      if (!this.isInMobileView(window.innerWidth)) {
+        document.body.classList.remove("overlay-expanded-on-mobile");
+        document.body.classList.remove("ios-scroll-fix");
+        this.iframe.style.width = "954px";
+
+        if (this.options.onShowHideScrollOnMobile) {
+          this.options.onShowHideScrollOnMobile(false);
+        }
+
+        if (this.iframe.classList.contains("overlay-iframe--expanded")) {
+          document.body.classList.add("overlay-expanded-on-desktop");
+
+          if (this.getCustomScrollbarSpecs().browserScrollbarWidth && !this.options.disableScrollMargin) {
+            document.body.style.marginRight = "".concat(this.getCustomScrollbarSpecs().scrollbarNegativeMarginValue, "px");
+          }
+        }
+      } else {
+        this.iframe.style.width = "100vw";
+        document.body.classList.remove("overlay-expanded-on-desktop");
+
+        if (document.body.style.marginRight && !this.options.disableScrollMargin) {
+          document.body.style.marginRight = null;
+        }
+      }
+    }
+  }, {
+    key: "sendOnResizeEvent",
+    value: function sendOnResizeEvent(firstTime) {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_RESIZED_WINDOW, {
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+        iframeHeight: this.iframe.offsetHeight,
+        iframeBoundingClientRect: this.iframe.getBoundingClientRect(),
+        firstTime: firstTime
+      });
+    }
+  }, {
+    key: "handleShowBackdrop",
+    value: function handleShowBackdrop() {
+      var _this5 = this;
+
+      if (this.options.onShowHide) {
+        this.options.onShowHide(true);
+      }
+
+      this.backdrop.classList.add("overlay-backdrop--show");
+
+      this.backdropListener = function () {
+        _this5.channel.send(COMMUNICATION_MESSAGES.WIDGET_HANDLE_BACKDROP_CLICK);
+      };
+
+      HtmlEvents.add(this.backdrop, "click", this.backdropListener);
+    }
+  }, {
+    key: "handleHideBackdrop",
+    value: function handleHideBackdrop() {
+      if (this.options.onShowHide) {
+        this.options.onShowHide(false);
+      }
+
+      if (!this.isInMobileView(window.innerWidth)) {
+        this.backdrop.classList.remove("overlay-backdrop--show");
+        HtmlEvents.remove(this.backdrop, "click", this.backdropListener);
+      }
+    }
+  }, {
+    key: "handleShowMobileTabs",
+    value: function handleShowMobileTabs() {
+      if (this.options.onShowHideScrollOnMobile && this.isInMobileView(window.innerWidth)) {
+        this.options.onShowHideScrollOnMobile(true);
+      }
+
+      if (this.isInMobileView(window.innerWidth)) {
+        document.body.classList.add("overlay-expanded-on-mobile");
+        isMobileDeviceIOS() && document.body.classList.add("ios-scroll-fix");
+        document.getElementById("overlay-container").classList.add("mobileActive");
+      }
+    }
+  }, {
+    key: "handleHideMobileTabs",
+    value: function handleHideMobileTabs() {
+      if (this.options.onShowHideScrollOnMobile && this.isInMobileView(window.innerWidth)) {
+        this.options.onShowHideScrollOnMobile(false);
+      }
+
+      if (this.isInMobileView(window.innerWidth)) {
+        document.body.classList.remove("overlay-expanded-on-mobile");
+        document.body.classList.remove("ios-scroll-fix");
+        document.getElementById("overlay-container").classList.remove("mobileActive");
+      }
+
+      this.backdrop.classList.remove("overlay-backdrop--show");
+      HtmlEvents.remove(this.backdrop, "click", this.backdropListener);
+    }
+  }, {
+    key: "handleExpand",
+    value: function handleExpand() {
+      this.iframe.classList.add("overlay-iframe--expanded");
+
+      if (this.isInMobileView(window.innerWidth)) {
+        document.getElementById("overlay-container").classList.add("mobileActive");
+      } else {
+        document.body.classList.add("overlay-expanded-on-desktop");
+
+        if (this.getCustomScrollbarSpecs().browserScrollbarWidth && !this.options.disableScrollMargin) {
+          document.body.style.marginRight = "".concat(this.getCustomScrollbarSpecs().scrollbarNegativeMarginValue, "px");
+        }
+      }
+    }
+  }, {
+    key: "handleLoggedIn",
+    value: function handleLoggedIn(payload) {
+      if (this.findByKey(getQueryParameters(), "lgdOut") && this.connectService.getItemFromLocalStorage(this.connectService.CONNECTLogOut)) {
+        return;
+      }
+
+      if (payload.action == OVERLAY_ON_CONNECT_ACTION_TYPE.INIT) {
+        this.hasInitializedCallback(true);
+      }
+
+      if (this.options.onConnect) {
+        this.options.onConnect(this.isReInit ? OVERLAY_ON_CONNECT_ACTION_TYPE.REINIT : payload.action, payload.getTicket);
+        this.isReInit = false;
+      }
+    }
+  }, {
+    key: "handleLoggedOut",
+    value: function handleLoggedOut(identity) {
+      var _this6 = this;
+
+      this.connectService.check(this.getNextUrl(), false, this.options.thirdPartyCookiesSupport, "handleLoggedOut").then(function () {
+        if ((window.overlayConnectSDK.sdkStatus.thirdPartyCookiesEnabled || !window.overlayConnectSDK.configService.config.thirdPartyCookieSupport) && _this6.options.onConnect) {
+          _this6.options.onConnect(OVERLAY_ON_CONNECT_ACTION_TYPE.LOGOUT, identity);
+        }
+      });
+
+      if (this.options.onShowHideScrollOnMobile) {
+        this.options.onShowHideScrollOnMobile(false);
+      }
+
+      document.body.classList.remove("overlay-expanded-on-mobile");
+      document.body.classList.remove("ios-scroll-fix");
+      document.getElementById("overlay-container").classList.remove("mobileActive");
+      this.backdrop.classList.remove("overlay-backdrop--show");
+      HtmlEvents.remove(this.backdrop, "click", this.backdropListener);
+    }
+  }, {
+    key: "handleCollapse",
+    value: function handleCollapse() {
+      this.iframe.classList.remove("overlay-iframe--expanded");
+
+      if (!this.isInMobileView(window.innerWidth)) {
+        document.getElementById("overlay-container").classList.remove("mobileActive");
+
+        if (document.body.classList.contains("overlay-expanded-on-desktop")) {
+          document.body.classList.remove("overlay-expanded-on-desktop");
+
+          if (this.getCustomScrollbarSpecs().browserScrollbarWidth && !this.options.disableScrollMargin) {
+            document.body.style.marginRight = null;
+          }
+        }
+      }
+    }
+  }, {
+    key: "handleResize",
+    value: function handleResize(props) {
+      if (this.isInMobileView(window.innerWidth)) {
+        this.iframe.style.height = null;
+
+        if (this.options.mobileHeight) {
+          this.container.style.height = "".concat(this.options.mobileHeight, "px");
+        }
+
+        if (this.container) {
+          this.container.style.width = "50px";
+
+          if (props.showSignInText && (props.showSignInText == SIGN_IN_TEXT.SIGN_IN || props.showSignInText == SIGN_IN_TEXT.AVATAR_SIGN_IN || props.showSignInText == true || props.showSignInText == "true")) {
+            this.container.style.width = "132px";
+          }
+        }
+
+        document.getElementById("overlay-iframe").classList.add("overlay-iframe-mobile");
+
+        if (props.isInExpandedMode) {
+          document.getElementById("overlay-container").classList.add("mobileActive");
+        }
+      } else {
+        if (this.container) {
+          this.container.style.width = null;
+
+          if (this.options.mobileHeight) {
+            this.container.style.height = "".concat(this.options.height, "px");
+          }
+        }
+
+        if (document.getElementById("overlay-iframe").classList.contains("overlay-iframe--expanded")) {
+          this.iframe.style.height = "100vh";
+        } else {
+          this.iframe.style.height = "".concat(this.options.height, "px");
+        }
+
+        document.getElementById("overlay-iframe").classList.remove("overlay-iframe-mobile");
+        document.getElementById("overlay-container").classList.remove("mobileActive");
+      }
+    }
+  }, {
+    key: "handleOpenLoginModal",
+    value: function handleOpenLoginModal(connectIFrameUrl) {
+      document.getElementsByTagName("body")[0].classList.add("ReactModal__Body--open");
+
+      if (navigator.userAgent.match(/Version\/[\d.]+.*Safari/)) {
+        document.getElementsByTagName("body")[0].classList.add("safari-modal-opened");
+        document.body.style.top = "0px";
+      }
+
+      var modalNode = document.getElementsByClassName("ReactModalPortal")[0];
+      modalNode.removeAttribute("style");
+      var modalContent = document.getElementsByClassName("ReactModal__Content")[0];
+      var connectIFrame = document.createElement("iframe");
+      connectIFrame.id = "connect-iframe";
+      connectIFrame.style.height = "100%";
+      connectIFrame.style.border = "0px";
+      connectIFrame.src = connectIFrameUrl;
+      modalContent.appendChild(connectIFrame);
+    }
+  }, {
+    key: "handleCloseLoginModal",
+    value: function handleCloseLoginModal() {
+      document.getElementsByTagName("body")[0].classList.remove("ReactModal__Body--open", "safari-modal-opened");
+      var connectIFrame = document.getElementById("connect-iframe");
+
+      if (document.body.hasAttribute("style")) {
+        document.body.removeAttribute("style");
+      }
+
+      if (connectIFrame) {
+        connectIFrame.parentNode.removeChild(connectIFrame);
+      }
+    }
+  }, {
+    key: "handleCloseLoginModalAndConnect",
+    value: function handleCloseLoginModalAndConnect() {
+      this.handleCloseLoginModal();
+    }
+  }, {
+    key: "handleChangeLocale",
+    value: function handleChangeLocale(locale) {
+      if (this.options.onChangeLocale) {
+        this.options.onChangeLocale(locale);
+      }
+
+      if (!locale) {
+        locale = this.options.locale;
+      }
+
+      this.locale = locale;
+
+      if (locale.toLowerCase() == "ar-ae") {
+        this.iframe.classList.add("overlay-iframe-arab-language");
+      } else {
+        this.iframe.classList.remove("overlay-iframe-arab-language");
+      }
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_CHANGE_LOCALE, locale);
+      var loginUrl = this.connectService.getLoginUrl(this.getLoginNextUrl(locale, this.config.connectEnv), locale, this.options.loginExternalType, !!navigator.userAgent.match(/Trident.*rv[ :]*11\./));
+      var connectUrl = this.connectService.getConnectUrl();
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_SET_CONNECT_LOGIN_URL, {
+        loginUrl: loginUrl,
+        connectUrl: connectUrl
+      });
+    }
+  }, {
+    key: "handleChangeLocaleFromCommunicationService",
+    value: function handleChangeLocaleFromCommunicationService(props) {
+      this.changeLocaleClassOnOverlayContainer(props.locale);
+
+      if (this.isInMobileView(window.innerWidth)) {
+        if (props.showSignInText && (props.showSignInText == SIGN_IN_TEXT.SIGN_IN || props.showSignInText == SIGN_IN_TEXT.AVATAR_SIGN_IN)) {
+          this.container.style.width = "132px";
+        }
+      }
+    }
+  }, {
+    key: "handleChangeGame",
+    value: function handleChangeGame(installmentIdOrSpaceId) {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_CHANGE_GAME, installmentIdOrSpaceId);
+    }
+  }, {
+    key: "reInit",
+    value: function reInit() {
+      var _this7 = this;
+
+      this.debugService.log("[Overlay Widget] reInit");
+
+      if (document.getElementById("overlay-iframe")) {
+        this.debugService.info("[Overlay Widget] reInit: #overlay-iframe exists");
+        this.channel.send(COMMUNICATION_MESSAGES.WIDGET_RE_INIT);
+      } else {
+        this.debugService.info("[Overlay Widget] reInit: #overlay-iframe does not exist");
+        this.isReInit = true;
+        this.removeEventListners();
+        this.appendContainer(function (iframe) {
+          var channelOrigin = _this7.config.overlayIndexUrl;
+          _this7.channel = new Channel_Channel(channelOrigin, iframe.contentWindow, _this7.options.enableDebug !== undefined ? _this7.options.enableDebug : _this7.config.enableDebug);
+
+          _this7.setupSubscriptions();
+        });
+      }
+    }
+  }, {
+    key: "isInMobileView",
+    value: function isInMobileView(windowSize) {
+      return windowSize <= COMMUNICATION_MESSAGES.WIDGET_RESIZE_WIDTH || windowSize <= COMMUNICATION_MESSAGES.WIDGET_MOBILE_WIDTH && window.innerHeight < windowSize && isMobileDevice();
+    }
+  }, {
+    key: "handleChangeEnv",
+    value: function handleChangeEnv(env) {
+      if (false) {}
+    }
+  }, {
+    key: "handleInitEnv",
+    value: function handleInitEnv(newConfig) {
+      if (false) {}
+    }
+  }, {
+    key: "handleChangeFriendsProfileType",
+    value: function handleChangeFriendsProfileType(type) {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_CHANGE_FRIEND_PROFILE_TYPE, type);
+    }
+  }, {
+    key: "handleChangeIframeHeight",
+    value: function handleChangeIframeHeight(height) {
+      if (!this.isInMobileView(window.innerWidth)) {
+        this.iframe.style.height = height;
+      }
+    }
+  }, {
+    key: "handleToggleDarkBackground",
+    value: function handleToggleDarkBackground() {
+      console.warn("Light theme is disabled for the moment");
+    }
+  }, {
+    key: "handleChangeExternalLoginType",
+    value: function handleChangeExternalLoginType(type) {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_CHANGE_EXTERNAL_LOGIN_TYPE, type);
+      var loginUrl = this.connectService.getLoginUrl(this.getLoginNextUrl(this.locale, this.config.connectEnv), this.locale, type, !!navigator.userAgent.match(/Trident.*rv[ :]*11\./));
+      var connectUrl = this.connectService.getConnectUrl();
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_SET_CONNECT_LOGIN_URL, {
+        loginUrl: loginUrl,
+        connectUrl: connectUrl
+      });
+    }
+  }, {
+    key: "handleToggleSignInText",
+    value: function handleToggleSignInText(toggle) {
+      if (this.isInMobileView(window.innerWidth)) {
+        if (toggle && (toggle == SIGN_IN_TEXT.SIGN_IN || toggle == SIGN_IN_TEXT.AVATAR_SIGN_IN)) {
+          this.container.style.width = "132px";
+        }
+      }
+
+      this.changeShowSignInTextClassOnOverlayContainer(toggle);
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TOGGLE_SIGN_IN_TEXT, toggle);
+    }
+  }, {
+    key: "toggleDesktopResize",
+    value: function toggleDesktopResize(toggle) {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TOGGLE_DESKTOP_RESIZE, toggle);
+      this.changeIsInDesktopResizeClassOnOverlayContainer(toggle);
+    }
+  }, {
+    key: "changeIframeUrl",
+    value: function changeIframeUrl() {
+      var src = this.iframe.src.split("?")[0];
+      var search = getQueryParameters(this.iframe.src.split("?")[1]);
+      this.iframe.src = "".concat(src, "?owner=").concat(search["owner"]);
+    }
+  }, {
+    key: "triggerEmailActivation",
+    value: function triggerEmailActivation(payload) {
+      var _this8 = this;
+
+      this.connectService.triggerEmailActivation(payload.ticket, payload.sessionId, payload.userId, this.getNextUrl(), function (triggerEmailResponse) {
+        _this8.channel.send(COMMUNICATION_MESSAGES.WIDGET_TRIGGER_EMAIL_VERIFICATION, triggerEmailResponse);
+      }, function () {});
+    }
+  }, {
+    key: "logout",
+    value: function logout(payload) {
+      var _this9 = this;
+
+      var callback = function callback() {
+        _this9.channel.send(COMMUNICATION_MESSAGES.WIDGET_TRIGGER_LOGOUT);
+
+        _this9.changeLoggedClassOnOverlayContainer(false);
+      };
+
+      this.connectService.logout(payload.ticket, payload.sessionId, this.getNextUrl(), this.options.thirdPartyCookiesSupport).then(callback)["catch"](callback);
+    }
+  }, {
+    key: "changeWidgetConfig",
+    value: function changeWidgetConfig(config) {
+      this.connectService.changeConfig(config);
+      var loginUrl = this.connectService.getLoginUrl(this.getLoginNextUrl(this.locale, config.connectEnv), this.locale, this.options.loginExternalType, !!navigator.userAgent.match(/Trident.*rv[ :]*11\./));
+      var connectUrl = this.connectService.getConnectUrl();
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_SET_CONNECT_LOGIN_URL, {
+        loginUrl: loginUrl,
+        connectUrl: connectUrl
+      });
+      location.reload();
+    }
+  }, {
+    key: "getUserData",
+    value: function getUserData(payload) {
+      var _this10 = this;
+
+      this.debugService.log("[Overlay Widget] getUserData");
+
+      var callback = function callback(triggerEmailResponse) {
+        _this10.channel.send(COMMUNICATION_MESSAGES.WIDGET_TRIGGER_USER_DATA_SUCCESS, triggerEmailResponse);
+      };
+
+      var errorCallback = function errorCallback() {
+        _this10.channel.send(COMMUNICATION_MESSAGES.WIDGET_TRIGGER_USER_DATA_ERROR);
+      };
+
+      return this.connectService.getUserData(payload.ticket, payload.sessionId, payload.userId, this.getNextUrl(), callback, this.options.thirdPartyCookiesSupport)["catch"](function () {
+        return errorCallback();
+      });
+    }
+  }, {
+    key: "refreshIdentity",
+    value: function refreshIdentity(payload) {
+      console.warn("x1");
+
+      try {
+        console.warn("x2");
+        localStorage.setItem("hasLocalStorage", "true");
+      } catch (error) {
+        console.warn("x3");
+        console.warn(error);
+        this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TICKET_ERROR);
+        this.changeLoggedClassOnOverlayContainer(false);
+        return new Promise(function (resolve, reject) {
+          return reject(error);
+        });
+      }
+
+      console.warn("x4");
+      var nextUrl = this.getNextUrl();
+      var hasLoginParams = this.checkIfLoginParamsExist(payload);
+      var afterLogin = payload.afterLogin && !hasLoginParams;
+
+      if (this.getIsSsoPage()) {
+        if (payload.afterLogin || payload.isReInit) {
+          if (afterLogin) {
+            this.connectService.removeAllDataFromLocaleStorage();
+          }
+
+          if (payload.isReInit) {
+            this.connectService.removeAllOverlayDataFromLocaleStorage();
+          }
+
+          return this.normalGetTicketFlow(nextUrl, WidgetService_objectSpread(WidgetService_objectSpread({}, payload), {}, {
+            afterLogin: afterLogin
+          }));
+        }
+
+        var refreshStatus = this.findByKey(getQueryParameters(), "refreshStatus");
+
+        if (refreshStatus) {
+          return this.checkIfLocalStorageDataIsExpiredFlow(nextUrl, payload);
+        }
+
+        if (this.findByKey(getQueryParameters(), "lgdOut")) {
+          if (this.connectService.getItemFromLocalStorage(this.connectService.CONNECTLogOut)) {
+            this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TICKET_ERROR);
+            this.changeLoggedClassOnOverlayContainer(false);
+            return this.connectService.lgdOutFlow(nextUrl, this.options.thirdPartyCookiesSupport, this.options.onConnect).then(this.handleCustomNextUrlFlowRedirect)["catch"](this.handleCustomNextUrlFlowRedirect);
+          }
+
+          return this.normalGetTicketFlow(nextUrl, WidgetService_objectSpread(WidgetService_objectSpread({}, payload), {}, {
+            afterLogin: afterLogin
+          }));
+        }
+      }
+
+      if (afterLogin || payload.isReInit) {
+        this.connectService.removeAllDataFromLocaleStorage();
+      }
+
+      return this.normalGetTicketFlow(nextUrl, WidgetService_objectSpread(WidgetService_objectSpread({}, payload), {}, {
+        afterLogin: afterLogin
+      }));
+    }
+  }, {
+    key: "checkIfLocalStorageDataIsExpiredFlow",
+    value: function checkIfLocalStorageDataIsExpiredFlow(nextUrl, payload) {
+      var formerSsoID = this.connectService.getItemFromLocalStorage(this.connectService.CONNECTFormerSsoID);
+
+      if (getQueryParameters()["refreshStatus"] === "ok" && getQueryParameters()["connectSsoId"] && getQueryParameters()["connectSsoId"] !== formerSsoID) {
+        this.connectService.setCONNECTssoExpirationInLocalStorage(RefreshStatus.OK);
+        return this.ssoFlow(nextUrl);
+      }
+
+      var ssoExpiration = this.connectService.getCONNECTssoExpiration();
+
+      if (!ssoExpiration) {
+        this.connectService.setCONNECTssoExpirationInLocalStorage();
+
+        if (getQueryParameters()["refreshStatus"] === "ok" && getQueryParameters()["connectSsoId"]) {
+          return this.ssoFlow(nextUrl);
+        }
+
+        return this.refreshStatusFlow(nextUrl, this.connectService.getCONNECTssoExpiration());
+      }
+
+      if (this.connectService.getIsExpired(ssoExpiration)) {
+        this.connectService.removeAllOverlayDataFromLocaleStorage();
+        return this.normalGetTicketFlow(nextUrl, payload, true);
+      }
+
+      return this.refreshStatusFlow(nextUrl, ssoExpiration);
+    }
+  }, {
+    key: "ssoFlow",
+    value: function ssoFlow(nextUrl) {
+      var _this11 = this;
+
+      this.connectService.ssoFlow(nextUrl, this.options.thirdPartyCookiesSupport).then(function (data) {
+        return _this11.handleTicketSuccess(data);
+      })["catch"](function (error) {
+        return _this11.handleTicketError(error, false);
+      });
+    }
+  }, {
+    key: "refreshStatusFlow",
+    value: function refreshStatusFlow(nextUrl, expirationDate) {
+      var _this12 = this;
+
+      return this.connectService.refreshStatusFlow(nextUrl, this.options.thirdPartyCookiesSupport, expirationDate).then(function (data) {
+        return _this12.handleTicketSuccess(data);
+      })["catch"](function (error) {
+        return _this12.handleTicketError(error, false);
+      });
+    }
+  }, {
+    key: "normalGetTicketFlow",
+    value: function normalGetTicketFlow(nextUrl, payload, leaveLocalStorageEmpty) {
+      var _this13 = this;
+
+      return this.connectService.refreshIdentityFlow(nextUrl, payload, this.options.thirdPartyCookiesSupport, leaveLocalStorageEmpty).then(function (data) {
+        return _this13.handleTicketSuccess(data);
+      })["catch"](function (error) {
+        return _this13.handleTicketError(error, payload.isReInit);
+      });
+    }
+  }, {
+    key: "handleCustomNextUrlFlowRedirect",
+    value: function handleCustomNextUrlFlowRedirect() {
+      var formerUrl = "";
+
+      try {
+        formerUrl = this.connectService.getItemFromLocalStorage(this.connectService.CONNECTFormerUrl);
+      } catch (error) {
+        console.error(error); // this.debugService.error(error);
+      }
+
+      if (this.options.nextUrl && typeof this.options.nextUrl === "string" && window.location.href.indexOf(this.options.nextUrl) !== -1 && formerUrl) {
+        window.location.href = formerUrl;
+        return true;
+      }
+
+      return false;
+    }
+  }, {
+    key: "handleTicketSuccess",
+    value: function handleTicketSuccess(data) {
+      if (this.handleCustomNextUrlFlowRedirect()) {
+        return Promise.resolve(data);
+      }
+
+      if (data && Object.keys(data).length) {
+        this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TICKET_SUCESS, data);
+        this.changeLoggedClassOnOverlayContainer(true);
+        return Promise.resolve(data);
+      }
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TICKET_ERROR);
+      this.changeLoggedClassOnOverlayContainer(false);
+      return Promise.resolve(data);
+    }
+  }, {
+    key: "handleTicketError",
+    value: function handleTicketError(error, isReInit) {
+      if (this.handleCustomNextUrlFlowRedirect()) {
+        return error;
+      }
+
+      if (error && error.status && error.status === OperationStatus.THIRD_PARTY_COOKIES_DISABLED && !this.options.thirdPartyCookiesSupport && isReInit) {
+        this.channel.send(COMMUNICATION_MESSAGES.WIDGET_LOGIN, {
+          status: false
+        });
+      }
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TICKET_ERROR, error);
+      this.changeLoggedClassOnOverlayContainer(false);
+      return Promise.reject(error);
+    }
+  }, {
+    key: "_401Flow",
+    value: function _401Flow() {
+      var _this14 = this;
+
+      this.connectService._401Flow(this.getNextUrl(), function () {
+        _this14.channel.send(COMMUNICATION_MESSAGES.WIDGET_401_FLOW_NO_TICKET);
+      }, function (getTicketResponse) {
+        _this14.channel.send(COMMUNICATION_MESSAGES.WIDGET_401_FLOW_GOT_TICKET, getTicketResponse);
+      }, this.options.thirdPartyCookiesSupport);
+    }
+  }, {
+    key: "getLoginNextUrl",
+    value: function getLoginNextUrl(lang, env) {
+      return getLoginNextUrl_getLoginNextUrl(env, {
+        appId: this.options.appId,
+        genomeId: this.options.genomeId,
+        lang: lang,
+        nextUrl: this.config.loginNextUrl
+      }, this.options.thirdPartyCookiesSupport);
+    }
+  }, {
+    key: "getSsoUrl",
+    value: function getSsoUrl() {
+      return "".concat(window.location.href.split("?")[0]).concat(this.getQueryStringWithAddedParam("isSso", "true"));
+    }
+  }, {
+    key: "getNextUrl",
+    value: function getNextUrl() {
+      if (this.options.nextUrl && typeof this.options.nextUrl === "string" && window.location.href.indexOf(this.options.nextUrl) === -1) {
+        return encodeURIComponent(this.options.nextUrl);
+      }
+
+      return encodeURIComponent(this.getSsoUrl());
+    }
+  }, {
+    key: "getTicketCallback",
+    value: function getTicketCallback(callback) {
+      var _this15 = this;
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_TICKET);
+      var subscribed = this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_GET_TICKET, function (identity) {
+        _this15.connectService.getTicket(_this15.getNextUrl(), callback, identity, _this15.options.thirdPartyCookiesSupport);
+
+        _this15.channel.unsuscribe(subscribed);
+      });
+    }
+  }, {
+    key: "getProfileCallback",
+    value: function getProfileCallback(callback) {
+      var _this16 = this;
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_CONNECT_CALLBACKS_PARAMS);
+      var subscribed = this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_GET_CONNECT_CALLBACKS_PARAMS, function (obj) {
+        _this16.connectService.getProfiles(obj.ticket, obj.sessionId, obj.userId, callback, _this16.getNextUrl(), _this16.options.thirdPartyCookiesSupport);
+
+        console.warn(subscribed);
+
+        _this16.channel.unsuscribe(subscribed);
+      });
+    }
+  }, {
+    key: "debounce",
+    value: function debounce(callback, wait) {
+      var _arguments = arguments,
+          _this17 = this;
+
+      var timeout = null;
+      return function () {
+        var context = _this17,
+            args = _arguments;
+
+        var later = function later() {
+          timeout = null;
+          callback.apply(context, args);
+        };
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+  }, {
+    key: "getEnv",
+    value: function getEnv() {
+      try {
+        this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_ENV, localStorage.getItem("overlay-env-v3"));
+      } catch (error) {
+        this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_ENV, null);
+      }
+    }
+  }, {
+    key: "getQueryString",
+    value: function getQueryString() {
+      var deleteRefresStatus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var changeRefresStatus = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var cleanQueryParams = getQueryParameters();
+      var cleanUrl = "";
+
+      if (deleteRefresStatus) {
+        delete cleanQueryParams["refreshStatus"];
+      }
+
+      if (changeRefresStatus) {
+        cleanQueryParams["refreshStatus"] = "toDel";
+      }
+
+      if (cleanQueryParams["isSso"]) {
+        delete cleanQueryParams["isSso"];
+      }
+
+      if (cleanQueryParams["lgdOut"]) {
+        delete cleanQueryParams["lgdOut"];
+      }
+
+      if (cleanQueryParams["connectSsoId"]) {
+        delete cleanQueryParams["connectSsoId"];
+      }
+
+      if (Object.keys(cleanQueryParams).length) {
+        cleanUrl += "?".concat(Object.keys(cleanQueryParams).map(function (item) {
+          return "".concat(encodeURIComponent(item), "=").concat(encodeURIComponent(cleanQueryParams[item]));
+        }).join("&"));
+      }
+
+      return cleanUrl;
+    }
+  }, {
+    key: "getQueryStringWithAddedParam",
+    value: function getQueryStringWithAddedParam(paramName, paramValue) {
+      return this.getQueryString(true) ? "".concat(this.getQueryString(true), "&").concat(paramName, "=").concat(paramValue) : "?".concat(paramName, "=").concat(paramValue);
+    }
+  }, {
+    key: "handleGetIframeBoundingClientRect",
+    value: function handleGetIframeBoundingClientRect() {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_IFRAME_BOUNDING_CLIENT_RECT, {
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+        iframeBoundingClientRect: this.iframe.getBoundingClientRect()
+      });
+    }
+  }, {
+    key: "getIframeBoundingClientRect",
+    value: function getIframeBoundingClientRect() {
+      var iframeBoundingClientRect = this.iframe.getBoundingClientRect();
+
+      if (iframeBoundingClientRect.width == 0) {
+        iframeBoundingClientRect = document.getElementById("overlay-container").getBoundingClientRect();
+
+        if (this.locale.toLowerCase() === "ar-ae") {
+          iframeBoundingClientRect = {
+            bottom: iframeBoundingClientRect.bottom,
+            height: iframeBoundingClientRect.height,
+            left: iframeBoundingClientRect.left,
+            right: iframeBoundingClientRect.left + 954 - 334,
+            top: iframeBoundingClientRect.top,
+            width: iframeBoundingClientRect.width
+          };
+        } else {
+          iframeBoundingClientRect = {
+            bottom: iframeBoundingClientRect.bottom,
+            height: iframeBoundingClientRect.height,
+            left: iframeBoundingClientRect.left - 954 + 334,
+            right: iframeBoundingClientRect.right,
+            top: iframeBoundingClientRect.top,
+            width: iframeBoundingClientRect.width
+          };
+        }
+      }
+
+      return iframeBoundingClientRect;
+    }
+  }, {
+    key: "getCustomScrollbarSpecs",
+    value: function getCustomScrollbarSpecs() {
+      var scrollbarWidth = 0;
+
+      if (typeof document !== "undefined") {
+        var div = document.createElement("div");
+        div.style.width = "100px";
+        div.style.height = "100px";
+        div.style.position = "absolute";
+        div.style.top = "-9999";
+        div.style.left = "-9999";
+        div.style.zIndex = "-1000";
+        div.style.overflow = "scroll";
+        div.style["MsOverflowStyle"] = "scrollbar";
+        document.body.appendChild(div);
+        scrollbarWidth = div.offsetWidth - div.clientWidth;
+        document.body.removeChild(div);
+      }
+
+      return {
+        browserScrollbarWidth: scrollbarWidth || 15,
+        scrollbarNegativeMarginValue: scrollbarWidth || 0
+      };
+    }
+  }, {
+    key: "findByKey",
+    value: function findByKey(obj, key) {
+      var found = false;
+      var array = Object.keys(obj);
+
+      for (var i = 0; i < array.length; i++) {
+        if (array[i] === key) {
+          found = true;
+          return found;
+        }
+      }
+
+      return found;
+    }
+  }, {
+    key: "getEmailVerificationStatusCallback",
+    value: function getEmailVerificationStatusCallback(callback) {
+      var _this18 = this;
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_CONNECT_CALLBACKS_PARAMS);
+      var subscribed = this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_GET_CONNECT_CALLBACKS_PARAMS, function (obj) {
+        _this18.connectService.getUserData(obj.ticket, obj.sessionId, obj.userId, _this18.getNextUrl(), callback, _this18.options.thirdPartyCookiesSupport);
+
+        _this18.channel.unsuscribe(subscribed);
+      });
+    }
+  }, {
+    key: "triggerEmailVerificationCallback",
+    value: function triggerEmailVerificationCallback(callback) {
+      var _this19 = this;
+
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_GET_CONNECT_CALLBACKS_PARAMS);
+      var subscribed = this.channel.subscribe(COMMUNICATION_MESSAGES.INTEGRATOR_GET_CONNECT_CALLBACKS_PARAMS, function (obj) {
+        _this19.connectService.triggerEmailActivation(obj.ticket, obj.sessionId, obj.userId, _this19.getNextUrl(), callback, function () {
+          _this19.channel.send(COMMUNICATION_MESSAGES.WIDGET_TRIGGER_EMAIL_ACTIVATION);
+        }, _this19.options.thirdPartyCookiesSupport);
+
+        _this19.channel.unsuscribe(subscribed);
+      });
+    }
+  }, {
+    key: "handleLogin",
+    value: function handleLogin(config) {
+      var _this20 = this;
+
+      this.connectService.ubisoftConnectService.getThirdPartyStatus().then(function (status) {
+        _this20.channel.send(COMMUNICATION_MESSAGES.WIDGET_LOGIN, {
+          status: status,
+          config: config
+        });
+      });
+    }
+  }, {
+    key: "handleLogout",
+    value: function handleLogout() {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_LOGOUT);
+    }
+  }, {
+    key: "handleOpenPopupWindow",
+    value: function handleOpenPopupWindow(props) {
+      this.openPopupWindow({
+        url: props.url,
+        title: props.title,
+        width: props.width,
+        height: props.height,
+        availWidth: window.top.screen.availWidth,
+        availLeft: window.top.screen["availLeft"] ? window.top.screen["availLeft"] : 0,
+        availHeight: window.top.screen.availHeight,
+        availTop: window.top.screen["availTop"] ? window.top.screen["availTop"] : 0
+      });
+    }
+  }, {
+    key: "addCrossDomainEventListenerWithTopic",
+    value: function addCrossDomainEventListenerWithTopic(topic, origin, callback) {
+      var listener = function listener(event) {
+        if (!event || !event.origin || event.origin != origin || !event.data || event.data != topic) {
+          return;
+        }
+
+        var payload = event.data.payload;
+
+        if (undefined === payload) {
+          payload = null;
+        }
+
+        callback(payload ? typeof payload === "string" ? JSON.parse(payload) : payload : {});
+      };
+
+      var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+      var eventer = window[eventMethod];
+      var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+      eventer(messageEvent, listener, false);
+      return listener;
+    }
+  }, {
+    key: "addCrossDomainEventListener",
+    value: function addCrossDomainEventListener(origin, key, value, callback) {
+      var listener = function listener(event) {
+        if (!event || !event.origin || event.origin != origin || !event.data) {
+          return;
+        }
+
+        if (event.data && typeof event.data === "string") {
+          try {
+            if (JSON.parse(event.data)[key] && JSON.parse(event.data)[key].indexOf(value) !== -1) {
+              callback();
+            }
+          } catch (error) {//console.error(error);
+          }
+        }
+      };
+
+      var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+      var eventer = window[eventMethod];
+      var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+      eventer(messageEvent, listener, false);
+      return listener;
+    }
+  }, {
+    key: "removeEventListners",
+    value: function removeEventListners() {
+      var _this21 = this;
+
+      if (this.subscriptions.length) {
+        this.subscriptions.forEach(function (subscription) {
+          _this21.channel.unsuscribe(subscription);
+        });
+      }
+
+      if (this.listeners.length) {
+        this.listeners.forEach(function (listener) {
+          removeCrossDomainEventListener(listener);
+        });
+      }
+    }
+  }, {
+    key: "toggleLoginType",
+    value: function toggleLoginType(toggle) {
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_TOGGLE_LOGIN_TYPE, toggle);
+    }
+  }, {
+    key: "changeLocaleClassOnOverlayContainer",
+    value: function changeLocaleClassOnOverlayContainer(newLocale) {
+      var overlayContainer = document.getElementById("overlay-container");
+
+      if (!overlayContainer) {
+        return;
+      }
+
+      if (!LOCALE_STRINGS_OBJ[newLocale]) {
+        newLocale = "en-GB";
+      }
+
+      LOCALE_STRINGS_ARRAY.map(function (locale) {
+        if (overlayContainer.classList.contains(locale) && locale !== newLocale) {
+          overlayContainer.classList.remove(locale);
+        }
+      });
+
+      if (!overlayContainer.classList.contains(newLocale)) {
+        overlayContainer.classList.add(newLocale);
+      }
+    }
+  }, {
+    key: "changeLoggedClassOnOverlayContainer",
+    value: function changeLoggedClassOnOverlayContainer(loggedIn) {
+      var overlayContainer = document.getElementById("overlay-container");
+
+      if (!overlayContainer) {
+        return;
+      }
+
+      if (loggedIn) {
+        overlayContainer.classList.add("logged-in");
+        overlayContainer.classList.remove("logged-out");
+      } else {
+        overlayContainer.classList.add("logged-out");
+        overlayContainer.classList.remove("logged-in");
+      }
+    }
+  }, {
+    key: "changeIsInDesktopResizeClassOnOverlayContainer",
+    value: function changeIsInDesktopResizeClassOnOverlayContainer(isInDesktopResize) {
+      var overlayContainer = document.getElementById("overlay-container");
+
+      if (!overlayContainer) {
+        return;
+      }
+
+      if (isInDesktopResize == "true" || isInDesktopResize == true) {
+        overlayContainer.classList.add("desktop-resize");
+      } else {
+        overlayContainer.classList.remove("desktop-resize");
+      }
+    }
+  }, {
+    key: "changeShowSignInTextClassOnOverlayContainer",
+    value: function changeShowSignInTextClassOnOverlayContainer(showSignInText) {
+      var overlayContainer = document.getElementById("overlay-container");
+
+      if (!overlayContainer) {
+        return;
+      }
+
+      if (showSignInText == SIGN_IN_TEXT.AVATAR_SIGN_IN || showSignInText == SIGN_IN_TEXT.SIGN_IN || showSignInText == SIGN_IN_TEXT.TRUE || showSignInText == true) {
+        overlayContainer.classList.add("with-login-text");
+      } else {
+        overlayContainer.classList.remove("with-login-text");
+      }
+
+      if (showSignInText == SIGN_IN_TEXT.AVATAR_SIGN_IN || showSignInText == SIGN_IN_TEXT.TRUE || showSignInText == true) {
+        overlayContainer.classList.add("with-avatar");
+      } else {
+        overlayContainer.classList.remove("with-avatar");
+      }
+    }
+  }, {
+    key: "handleUpdateIntegratorConfiguration",
+    value: function handleUpdateIntegratorConfiguration(options) {
+      var typeToCheck = {
+        appId: "string",
+        zIndex: "string",
+        trackingSiteType: "string",
+        trackingSiteName: "string",
+        trackingSiteSection: "string",
+        genomeId: "string",
+        container: "string",
+        locale: "string",
+        height: "number",
+        mobileHeight: "number",
+        themeColor: "string",
+        darkBackground: "boolean",
+        installmentId: "string",
+        loginType: "string",
+        loginExternalType: "string",
+        customerSupportLinks: "Array",
+        overwrittenLinks: "object",
+        clickFriendsProfileType: "string",
+        isInDesktopResize: "boolean",
+        showSignInText: "string",
+        thirdPartyCookiesSupport: "boolean",
+        spaceId: "string",
+        hasParentSiteTrackingIntegrate: "boolean",
+        hasParentSiteTcOptoutSdkCookieSet: "boolean",
+        browserScrollbarWidth: "number",
+        scrollbarNegativeMarginValue: "number",
+        enableDebug: "boolean",
+        customStoreBuyButton: "boolean",
+        onConnect: "function",
+        onShowHide: "function",
+        onShowHideScrollOnMobile: "function",
+        onChangeLocale: "function",
+        collapse: "function",
+        expandFriends: "function",
+        expandPlayerCard: "function",
+        expandNotifications: "function",
+        onFriendAction: "function"
+      };
+
+      if (_typeof(options) !== "object") {
+        return;
+      }
+
+      var isValid = !Object.keys(options).find(function (optionsKey) {
+        if (!typeToCheck[optionsKey]) {
+          return true;
+        }
+
+        if (typeToCheck[optionsKey] === "Array") {
+          return !Array.isArray(options[optionsKey]);
+        }
+
+        return _typeof(options[optionsKey]) !== typeToCheck[optionsKey];
+      });
+
+      if (!isValid) {
+        return;
+      }
+
+      this.options = WidgetService_objectSpread(WidgetService_objectSpread({}, this.options), options);
+      this.channel.send(COMMUNICATION_MESSAGES.WIDGET_UPDATE_INTEGRATOR_CONFIG, this.options);
+
+      if (Object.prototype.hasOwnProperty.call(options, "enableDebug")) {
+        this.connectService.debugService.setDebug(options["enableDebug"]);
+        this.channel.setDebug(options["enableDebug"]);
+      }
+    }
+  }, {
+    key: "checkIfLoginParamsExist",
+    value: function checkIfLoginParamsExist(payload) {
+      var hasLoginParams = false;
+
+      if (!payload.loginParams) {
+        return hasLoginParams;
+      }
+
+      Object.keys(payload.loginParams).forEach(function (key) {
+        var webAuthLocalStorageKeys = ["loginData", "lastProfile", "rememberMe", "rememberDevice", "errorRefreshData", "lockRequestsKey", "ssoCallBackStatusKey"];
+
+        if (webAuthLocalStorageKeys.find(function (webAuthKey) {
+          return key.indexOf(webAuthKey) !== -1;
+        })) {
+          hasLoginParams = true;
+          localStorage.setItem(key, JSON.stringify(payload.loginParams[key]));
+        }
+      });
+
+      if (Object.keys(payload.loginParams).indexOf("".concat(this.config.connectEnv.toUpperCase(), "loginData")) !== -1 && Object.keys(payload.loginParams).indexOf("".concat(this.config.connectEnv.toUpperCase(), "ssoCallBackStatusKey")) !== -1) {
+        this.connectService.removeAllOverlayDataFromLocaleStorage();
+        var data = payload.loginParams["".concat(this.config.connectEnv.toUpperCase(), "loginData")];
+
+        if (data.status && data.status === "ok") {
+          this.connectService.setItemInLocalStorage(this.connectService.CONNECTloginData, {
+            opId: data.opId,
+            sessionId: data.payload.sessionId,
+            ticket: data.payload.ticket,
+            token: data.payload.token,
+            user_id: data.payload.userId,
+            expiration: data.payload.expiration || data.expirationDate
+          });
+        }
+
+        this.connectService.setCONNECTssoExpirationInLocalStorage(RefreshStatus.OK, payload.loginParams["".concat(this.config.connectEnv.toUpperCase(), "ssoCallBackStatusKey")].expirationDate);
+
+        if (localStorage.getItem("".concat(this.config.connectEnv.toUpperCase(), "errorRefreshData"))) {
+          localStorage.removeItem("".concat(this.config.connectEnv.toUpperCase(), "errorRefreshData"));
+        }
+
+        if (localStorage.getItem(this.connectService.CONNECTerror)) {
+          localStorage.removeItem(this.connectService.CONNECTerror);
+        }
+      }
+
+      return hasLoginParams;
+    }
+  }, {
+    key: "openPopupWindow",
+    value: function openPopupWindow(payload) {
+      var left = (payload.availWidth - payload.width) / 2 + payload.availLeft;
+      var top = (payload.availHeight - payload.height) / 2 + payload.availTop;
+      this.debugService.log("openPopupWindow: left: ".concat(left));
+      this.debugService.log("openPopupWindow: top: ".concat(top));
+      this.debugService.log("openPopupWindow pop up features: toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,width=".concat(payload.width, ",height=").concat(payload.height, ",left=").concat(Math.ceil(left), ",top=").concat(Math.ceil(top)));
+
+      try {
+        var newWindow = window.open(payload.url, payload.title, "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,width=".concat(payload.width, ",height=").concat(payload.height, ",left=").concat(Math.ceil(left), ",top=").concat(Math.ceil(top))); // Puts focus on the newWindow
+
+        if (window.focus) {
+          newWindow.focus();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, {
+    key: "getIsSsoPage",
+    value: function getIsSsoPage() {
+      return this.findByKey(getQueryParameters(), "isSso") || this.findByKey(getQueryParameters(), "refreshStatus") || this.findByKey(getQueryParameters(), "connectSsoId");
+    }
+  }, {
+    key: "handleGetThirdPartyStatusForLogin",
+    value: function handleGetThirdPartyStatusForLogin(shouldLogin) {
+      var _this22 = this;
+
+      this.connectService.ubisoftConnectService.getThirdPartyStatus().then(function (thirdPartyCookiesSupport) {
+        _this22.channel.send(COMMUNICATION_MESSAGES.WIDGET_THIRD_PARTY_COOKIES_SUPPORT, {
+          thirdPartyCookiesSupport: thirdPartyCookiesSupport,
+          shouldLogin: shouldLogin
+        });
+      });
+    }
+  }, {
+    key: "handleOnFriendAction",
+    value: function handleOnFriendAction(payload) {
+      if (this.options.onFriendAction) {
+        this.options.onFriendAction(payload.pid, payload.state);
+      }
+    }
+  }]);
+
+  return WidgetService;
+}()) || _class);
+;// CONCATENATED MODULE: ./app/widget.js
+
+
+function getOverlayWidget(version) {
+  var object = {
+    inst: null,
+    hasInitialized: false,
+    init: function init(options) {
+      if (object.hasInitialized) {
+        return;
+      }
+
+      var config = {"env":"prod","assetsUrl":"https://static-overlay.ubisoft.com/overlay/overlay-connect-integration/prod/public","overlayApplicationUrl":"https://overlay.ubisoft.com/overlay-connect-integration","overlayIndexUrl":"https://connect.ubisoft.com/indexOverlay.html","baseUrl":"/","version":"5.0.13","rewardsUrl":"//static8.cdn.ubi.com/u/Uplay","apiEnv":"prod","avatarsEnv":"prod","avatarsUrl":"https://avatars.ubisoft.com","connectEnv":"prod","connectEndpoint":"https://connect.ubisoft.com","linkedAccountsApiEndpoint":"https://connect.ubisoft.com","connectJsUrl":"https://ubistatic2-a.ubisoft.com/uplay-connect/v3/prod/default/sdk/connectSdkPublic.js","loginUrl":"https://connect.ubisoft.com/login","loginNextUrl":"https://connect.ubisoft.com/logged-in.html","thirdPartyCookiesErrorUrl":"https://ubistatic2-a.ubisoft.com/overlay/overlay-connect-integration/prod/public/third-party-cookies-error.html","twitchUrl":"https://api.twitch.tv/kraken/oauth2/authorize","twitchID":"ik4kgnclcg9gv59ft7voz7ho5zzyuo2","twitchConnectUrl":"https://connect.ubi.com/Default/TwitchCallback","analyticsEnv":"prod","badgesSpaceId":"348db1b4-8cdd-400c-97bd-228e6b5a3fa3","clubUrl":"https://ubisoftconnect.com","accountUrl":"https://account.ubisoft.com","customerSupportUrl":"https://www.ubisoft.com/{locale}/help","analyticsSdkUrl":"https://ubistatic-a.ubisoft.com/0106/prod/global/tracking/analyticssdk.js","twitchClientId":"6a9lcgtz1vpt9l49p1ib6alx86lczpz","statsCDNUrl":"https://ubiservices.cdn.ubi.com","webcenterAssetsUrl":"https://ubistatic2-a.ubisoft.com/uplay-webcenter/prod","betaPopulationsSpaceId":"d1035aa9-be98-4295-8184-39a53d3aae10","betaEnitySpaceId":"dc451c3a-d711-4751-95eb-53cea444f7fd","betaType":"Overlay_Notifications","enableDebug":false,"avatarsMaintenanceStartDate":"2020-05-18 06:58:00","avatarsMaintenanceEndDate":"2020-05-18 11:00:00","ubiServicesEndpoint":"https://public-ubiservices.ubi.com","uplayWebcenterEndpoint":"https://uplaywebcenter.ubi.com","websocketEndpoint":"wss://public-ws-ubiservices.ubi.com","websocketNotificationTypes":["FRIENDS_RELATIONSHIP_UPDATE","FRIENDS_RELATIONSHIP_TRIGGER"],"websocketSpaceIds":["45d58365-547f-4b45-ab5b-53ed14cc79ed"],"ubiStoreUrl":"https://store.ubisoft.com","localLoginExpirationMinutes":10};
+
+      if (false) {}
+
+      var widget = new WidgetService(config, options, function (hasInitialized) {
+        object.hasInitialized = hasInitialized;
+      });
+      object.inst = widget;
+
+      if (version < 2) {
+        console.warn("uplayOverlayWidget is deprecated. Please use the new overlayWidget");
+      }
+
+      widget.bootstrap(options);
+    },
+    changeLocale: function changeLocale(locale) {
+      object.inst.handleChangeLocale(locale);
+    },
+    changeTrackingSiteSection: function changeTrackingSiteSection() {
+      console.warn("changeTrackingSiteSection is deprecated");
+    },
+    reInit: function reInit() {
+      object.inst.reInit();
+    },
+    changeGame: function changeGame(installmentIdOrSpaceId) {
+      object.inst.handleChangeGame(installmentIdOrSpaceId);
+    },
+    changeEnv: function changeEnv(env) {
+      if (false) {}
+    },
+    changeFriendsProfileType: function changeFriendsProfileType(type) {
+      object.inst.handleChangeFriendsProfileType(type);
+    },
+    toggleDarkBackground: function toggleDarkBackground(toggle) {
+      object.inst.handleToggleDarkBackground(toggle);
+    },
+    // changeLoginType: (type?: string) => {
+    // 	object.inst.handleChangeLoginType(type);
+    // },
+    toggleSignInText: function toggleSignInText(toggle) {
+      object.inst.handleToggleSignInText(toggle);
+    },
+    toggleDesktopResize: function toggleDesktopResize(toggle) {
+      object.inst.toggleDesktopResize(toggle);
+    },
+    getTicket: function getTicket(callback) {
+      if (object && object.inst) {
+        object.inst.getTicketCallback(callback);
+      }
+    },
+    getProfiles: function getProfiles(callback) {
+      if (object && object.inst) {
+        object.inst.getProfileCallback(callback);
+      }
+    },
+    getUserStatus: function getUserStatus(callback) {
+      if (object && object.inst) {
+        object.inst.getEmailVerificationStatusCallback(callback);
+      }
+    },
+    triggerEmailActivation: function triggerEmailActivation(callback) {
+      if (object && object.inst) {
+        object.inst.triggerEmailVerificationCallback(callback);
+      }
+    },
+    login: function login(config) {
+      object.inst.handleLogin(config);
+    },
+    logout: function logout() {
+      object.inst.handleLogout();
+    },
+    toggleLoginType: function toggleLoginType(toggle) {
+      object.inst.toggleLoginType(toggle);
+    },
+    changeExternalLoginType: function changeExternalLoginType(login) {
+      object.inst.handleChangeExternalLoginType(login);
+    },
+    updateIntegratorConfiguration: function updateIntegratorConfiguration(options) {
+      object.inst.handleUpdateIntegratorConfiguration(options);
+    }
+  };
+  return object;
+}
+
+window.uplayOverlayWidget = getOverlayWidget(1);
+window.overlayWidget = getOverlayWidget(2);
+
+if (window.uplayOverlayInit) {
+  console.warn("uplayOverlayInit is deprecated. Please use the new overlayInit");
+  window.uplayOverlayInit();
+}
+
+if (window.overlayInit) {
+  window.overlayInit();
+}
+})();
+
+/******/ })()
+;

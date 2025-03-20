@@ -1,0 +1,85 @@
+/* NCSA CONTINENT CSS */
+
+/*.r6s-freeWeekend .r6s-freeWeekend-header {*/
+/*background: #000*/
+/*url(https://static-dm.akamaized.net/siege/prod/r6s-ncsa-freeweekend-desktop-background_1920x600.jpg) 50% 0*/
+/*no-repeat;*/
+/*}*/
+
+/*.r6s-freeWeekend-header .r6s-promoList-freeWeekend-header .promo__wrapper__media {*/
+/*display: none;*/
+/*}*/
+
+/*.r6s-freeWeekend-header .r6s-promoList-freeWeekend-header h2,*/
+/*.r6s-freeWeekend-header .r6s-promoList-freeWeekend-header h3,*/
+/*.r6s-freeWeekend-header .r6s-promoList-freeWeekend-header p {*/
+/*color: white;*/
+/*}*/
+
+.r6s-homepage .r6s-header .r6s-c-promo-perso .promo__wrapper__media img {
+  height: 100%;
+  width: auto;
+}
+
+.r6s-homepage .r6s-header .r6s-c-promo-perso .promo__wrapper__media {
+  height: 100%;
+}
+
+body.en-us .socialShare:before,
+body.en-ca .socialShare:before {
+  content: "SHARE:";
+  color: black;
+  font-weight: 800;
+  font-family: R6S-Light, sans-serif;
+  font-size: 25px;
+  padding-top: 5px;
+}
+
+body.fr-ca .socialShare:before {
+  content: "PARTAGER:";
+  color: black;
+  font-weight: 800;
+  font-family: R6S-Light, sans-serif;
+  font-size: 25px;
+  padding-top: 5px;
+}
+
+body.es-mx .socialShare:before {
+  content: "COMPARTIR:";
+  color: black;
+  font-weight: 800;
+  font-family: R6S-Light, sans-serif;
+  font-size: 25px;
+  padding-top: 5px;
+}
+
+body.pt-br .socialShare:before {
+  content: "COMPARTILHAR:";
+  color: black;
+  font-weight: 800;
+  font-family: R6S-Light, sans-serif;
+  font-size: 25px;
+  padding-top: 5px;
+}
+
+.icon-copy {
+  height: 25px;
+  width: 25px;
+  fill: black;
+}
+
+.globalNavigation__logo {
+  z-index: 1001;
+}
+
+/* TEMP FIX ON OPERATOR PAGE */
+.r6s-op-details .operator__header__icons__names img:nth-of-type(2),
+.r6s-op-details .operator__header__icons__names h2 {
+  display: none;
+}
+
+/* AB tests */
+/* https://app.vwo.com/#/test/ab/333/summary */
+.r6s-c-gameSiteNavigation--variation {
+  visibility: hidden;
+}
